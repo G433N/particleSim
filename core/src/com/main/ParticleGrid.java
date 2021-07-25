@@ -9,7 +9,7 @@ public class ParticleGrid {
     // TODO : size get()
     public static int width = 120;
     public static int length = 120;
-
+    private final Particle wall = new Particle(Particles.NULL);
     Particle[][] grid;
 
 
@@ -31,7 +31,11 @@ public class ParticleGrid {
     }
 
     public Particle getParticle(int x, int y) {
-        return this.grid[x][y];
+
+        if (0 <= x && x < width && 0 <= y && y < length) {
+            return this.grid[x][y];
+        }
+        return wall;
     }
 
     public Particle getParticle(GridPoint2 point) {
@@ -47,10 +51,19 @@ public class ParticleGrid {
     public Particles getParticleType(int x, int y) {
 
         if (0 <= x && x < width && 0 <= y && y < length) {
-            return this.grid[x][y].getType();
+            return this.getParticle(x, y).getType();
         }
 
         return Particles.NULL;
+    }
+
+    public int getParticleDensity(int x, int y) {
+
+        if (0 <= x && x < width && 0 <= y && y < length) {
+            return this.getParticle(x, y).density;
+        }
+
+        return wall.density;
     }
 
     public void setParticle(int x, int y, Particle p) {
@@ -72,7 +85,7 @@ public class ParticleGrid {
             for (int x = 0; x < width; x++) {
 
                 Particles type = this.getParticleType(x, y);
-                Particle p = this.getParticle(x, y);
+                int density = this.getParticle(x, y).density;
 
                 switch (type) {
                     // If particle updates against update-flow remember to check if are in new grid
@@ -82,47 +95,43 @@ public class ParticleGrid {
                     case WATER:
                     case SAND:
                         // TODO : MAKE MORE EFECTIVE
-                        if ( this.getParticleType(x, y - 1) == Particles.AIR ) {
-                            nextGrid.setParticle(x, y, new Particle(Particles.AIR));
-                            nextGrid.setParticle(x, y - 1, new Particle(type));
-                        }
-                        else if ( this.getParticleType(x - 1, y - 1) == Particles.AIR ) {
-                            nextGrid.setParticle(x, y, new Particle(Particles.AIR));
-                            nextGrid.setParticle(x - 1, y - 1, new Particle(type));
-                        }
-                        else if ( this.getParticleType(x + 1, y - 1) == Particles.AIR ) {
-                            nextGrid.setParticle(x, y, new Particle(Particles.AIR));
-                            nextGrid.setParticle(x + 1, y - 1, new Particle(type));
-                        }
-                        else nextGrid.setParticle(x, y, new Particle(type));
-
-                        /*
-                        else if (this.getParticleType(x + 1, y) == Particles.AIR )  {
-
-                            nextGrid.setParticle( x, y, new Particle(Particles.AIR));
-                            nextGrid.setParticle( x + 1, y, new Particle(Particles.WATER));
-
-                        }
-                        else if (this.getParticleType(x - 1, y) == Particles.AIR && nextGrid.getParticleType(x - 1, y) == Particles.AIR) {
-
-                            nextGrid.setParticle( x, y, new Particle(Particles.AIR) );
-                            nextGrid.setParticle(x - 1, y, new Particle(Particles.WATER) );
-
-                        }*/
-
+                        this.updateParticle(x, y);
                         break;
-
                     default:
-                        nextGrid.setParticle(x, y, new Particle(type));
-                        break;
+                        throw new IllegalStateException("Unexpected value: " + type);
                 }
             }
         }
 
-        this.grid = nextGrid.grid;
+        //this.grid = nextGrid.grid;
     }
 
-    public void move() {
-        // Make particles change place
+    public void switchParticles(GridPoint2 p1, GridPoint2 p2) {
+        Particle p = this.getParticle(p2);
+        this.setParticle(p2, this.getParticle(p1));
+        this.setParticle(p1, p);
+    }
+
+    public void updateParticle(int x, int y) {
+        int density = this.getParticle(x, y).density;
+
+        if ( this.getParticleDensity(x, y - 1) < density ) {
+            this.switchParticles(new GridPoint2(x, y), new GridPoint2(x, y-1));
+        }
+        else if ( this.getParticleDensity(x - 1, y - 1) < density ) {
+            this.switchParticles(new GridPoint2(x, y), new GridPoint2(x-1, y-1));
+        }
+        else if ( this.getParticleDensity(x + 1, y - 1) < density ) {
+            this.switchParticles(new GridPoint2(x, y), new GridPoint2(x+1, y-1));
+        }
+        else if (!this.getParticle(x, y).liquid) {
+            return;
+        }
+        else if (this.getParticleDensity(x + 1, y) < density )  {
+            this.switchParticles(new GridPoint2(x, y), new GridPoint2(x+1, y));
+        }
+        else if (this.getParticleDensity(x - 1, y) < density ) {
+            this.switchParticles(new GridPoint2(x, y), new GridPoint2(x-1, y));
+        }
     }
 }
