@@ -85,15 +85,16 @@ public class ParticleGrid {
             for (int x = 0; x < width; x++) {
 
                 Particles type = this.getParticleType(x, y);
-                int density = this.getParticle(x, y).density;
 
                 switch (type) {
                     // If particle updates against update-flow remember to check if are in new grid
                     case AIR:
+                    case METAL:
                         break;
 
                     case WATER:
                     case SAND:
+                    case DIRT:
                         // TODO : MAKE MORE EFECTIVE
                         this.updateParticle(x, y);
                         break;
@@ -102,8 +103,6 @@ public class ParticleGrid {
                 }
             }
         }
-
-        //this.grid = nextGrid.grid;
     }
 
     public void switchParticles(GridPoint2 p1, GridPoint2 p2) {
@@ -118,10 +117,13 @@ public class ParticleGrid {
         if ( this.getParticleDensity(x, y - 1) < density ) {
             this.switchParticles(new GridPoint2(x, y), new GridPoint2(x, y-1));
         }
-        else if ( this.getParticleDensity(x - 1, y - 1) < density ) {
+        else if (!(this.getParticle(x, y).liquid || this.getParticle(x, y).loose)) {
+            return;
+        }
+        else if ( this.getParticleDensity(x - 1, y - 1) < density && this.getParticleType(x-1, y) == Particles.AIR) {
             this.switchParticles(new GridPoint2(x, y), new GridPoint2(x-1, y-1));
         }
-        else if ( this.getParticleDensity(x + 1, y - 1) < density ) {
+        else if ( this.getParticleDensity(x + 1, y - 1) < density && this.getParticleType(x+1, y) == Particles.AIR) {
             this.switchParticles(new GridPoint2(x, y), new GridPoint2(x+1, y-1));
         }
         else if (!this.getParticle(x, y).liquid) {

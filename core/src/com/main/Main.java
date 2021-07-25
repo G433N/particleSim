@@ -26,6 +26,11 @@ import java.util.Map;
 import static java.lang.Math.floor;
 import static java.lang.Math.max;
 
+// TODO : Add grass
+// TODO : Add editor tools, like brush size, fast selecet, spawn speed
+// TODO : Add electicity
+
+
 public class Main extends ApplicationAdapter {
 
 	public static final int pixelSize = 8;
@@ -58,10 +63,12 @@ public class Main extends ApplicationAdapter {
 		particleGrid = new ParticleGrid();
 	}
 
-	private void ImageLoading() {
+	private void ImageLoading() { // TODO : Add automated loading
 		textureHashMap.put("air", new Texture("particle/air.png"));
 		textureHashMap.put("sand", new Texture("particle/sand.png"));
 		textureHashMap.put("water", new Texture("particle/water.png"));
+		textureHashMap.put("dirt", new Texture("particle/dirt.png"));
+		textureHashMap.put("metal", new Texture("particle/metal.png"));
 		textureHashMap.put("selected", new Texture("selected.png"));
 	}
 
