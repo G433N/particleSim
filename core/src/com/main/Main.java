@@ -44,7 +44,7 @@ public class Main extends ApplicationAdapter {
 	private Vector2 mousePos = new Vector2();
 	private GridPoint2 gridPos = new GridPoint2(); //IntVector2;
 
-	private int spawn = 0; // TODO : TEMP
+	private int spawn = 0;
 	private int spawnRate = 1;
 	private int spawnIndex = 2;
 	private Particles spawnType = Particles.getParticle(spawnIndex);
