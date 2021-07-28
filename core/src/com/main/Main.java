@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static java.lang.Math.floor;
-import static java.lang.Math.max;
 
 public class Main extends ApplicationAdapter {
 
@@ -37,9 +36,9 @@ public class Main extends ApplicationAdapter {
 	private ParticleGrid particleGrid;
 
 	private Vector2 mousePos = new Vector2();
-	private GridPoint2 gridPos = new GridPoint2(); //IntVector2;
+	private GridPoint2 gridPos = new GridPoint2();
 
-	private int spawn = 0; // TODO : TEMP
+	private int spawn = 0;
 	private int spawnRate = 1;
 	private int spawnIndex = 2;
 	private Particles spawnType = Particles.getParticle(spawnIndex);
@@ -94,11 +93,9 @@ public class Main extends ApplicationAdapter {
 
 		inputs();
 
-		particleGrid.tick();
+		//particleGrid.tick();
 
-		//draw();
-
-		newDraw();
+		draw();
 
 	}
 
@@ -121,7 +118,7 @@ public class Main extends ApplicationAdapter {
 		else spawn = 0;
 	}
 
-	private void newDraw() {
+	private void draw() {
 
 		ScreenUtils.clear(1, 1, 1, 1);
 
@@ -140,33 +137,6 @@ public class Main extends ApplicationAdapter {
 
 		stage.act();
 		stage.draw();
-	}
-
-	private void draw() {
-
-		ScreenUtils.clear(1, 1, 1, 1);
-
-		batch.begin();
-
-		for (int y = 0; y < particleGrid.length; y++) {
-			for (int x = 0; x < particleGrid.width; x++) {
-
-				String name = particleGrid.getParticle(x, y).getType().name().toLowerCase();
-
-				batch.draw(textureHashMap.get(name), x * pixelSize, y * pixelSize);
-			}
-		}
-
-
-		// FIXME : Beautiful debug
-		/*
-		font.draw(batch, "Mousepos X: " + mousePos.x, 20, 500);
-		font.draw(batch, "Mousepos Y: " + mousePos.y, 20, 480);
-		font.draw(batch, "Gridpos X: " + gridPos.x, 20, 460);
-		font.draw(batch, "Gridpos Y: " + gridPos.y, 20, 440);
-*/
-
-		batch.end();
 	}
 
 	@Override
