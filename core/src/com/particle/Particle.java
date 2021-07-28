@@ -26,6 +26,11 @@ public class Particle {
             this.density = 2;
         } else if (type == Particles.METAL) {
             this.density = 9999;
+        } else if (type == Particles.GRASS) {
+            this.density = 2;
+        } else if (type == Particles.MUD) {
+            this.density = 2;
+            this.loose = true;
         } else {
             throw new IllegalStateException("Unexpected value: " + type);
         }

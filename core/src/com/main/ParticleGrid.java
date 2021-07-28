@@ -92,17 +92,61 @@ public class ParticleGrid {
                     case METAL:
                         break;
 
-                    case WATER:
                     case SAND:
-                    case DIRT:
-                        // TODO : MAKE MORE EFECTIVE
+                    case WATER:
+                    case MUD:
                         this.updateParticle(x, y);
                         break;
+
+
+                    case DIRT:
+                        if (this.getParticleType(x, y + 1) == Particles.AIR) {
+                            this.setParticle(x, y, new Particle(Particles.GRASS));
+                        }
+                        if (closeBy(x, y, Particles.WATER)) {
+                            this.setParticle(x, y, new Particle(Particles.MUD));
+                        }
+                        this.updateParticle(x, y);
+                        break;
+
+                    case GRASS:
+                        if (this.getParticleType(x, y + 1) != Particles.AIR) {
+                            this.setParticle(x, y, new Particle(Particles.DIRT));
+                        }
+                        this.updateParticle(x, y);
+                        break;
+
                     default:
                         throw new IllegalStateException("Unexpected value: " + type);
                 }
             }
         }
+    }
+
+    private boolean surroundedBy(int x, int y, Particles type) {
+
+        if (type == this.getParticleType(x, y + 1)) {
+            return false;
+        } else if (type == this.getParticleType(x+1, y + 1)) {
+            return false;
+        } else if (type == this.getParticleType(x+1, y)) {
+            return false;
+        } else if (type == this.getParticleType(x+1, y-1)) {
+            return false;
+        } else if (type == this.getParticleType(x, y - 1)) {
+            return false;
+        } else if (type == this.getParticleType(x-1, y-1)) {
+            return false;
+        } else if (type == this.getParticleType(x-1, y)) {
+            return false;
+        } else if (type == this.getParticleType(x-1, y+1)) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean closeBy(int x, int y, Particles type) {
+        return !surroundedBy(x, y, type);
     }
 
     public void switchParticles(GridPoint2 p1, GridPoint2 p2) {
@@ -120,10 +164,10 @@ public class ParticleGrid {
         else if (!(this.getParticle(x, y).liquid || this.getParticle(x, y).loose)) {
             return;
         }
-        else if ( this.getParticleDensity(x - 1, y - 1) < density && this.getParticleType(x-1, y) == Particles.AIR) {
+        else if ( this.getParticleDensity(x - 1, y - 1) < density && this.getParticleDensity(x - 1, y) < density) {
             this.switchParticles(new GridPoint2(x, y), new GridPoint2(x-1, y-1));
         }
-        else if ( this.getParticleDensity(x + 1, y - 1) < density && this.getParticleType(x+1, y) == Particles.AIR) {
+        else if ( this.getParticleDensity(x + 1, y - 1) < density && this.getParticleDensity(x + 1, y) < density) {
             this.switchParticles(new GridPoint2(x, y), new GridPoint2(x+1, y-1));
         }
         else if (!this.getParticle(x, y).liquid) {
