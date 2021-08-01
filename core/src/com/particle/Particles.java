@@ -7,11 +7,7 @@ public enum Particles {
     NULL,
     AIR,
     SAND,
-    WATER,
-    DIRT,
-    METAL,
-    GRASS,
-    MUD;
+    WATER;
 
     private static Particles[] list = Particles.values();
     private static final int amount = list.length;
