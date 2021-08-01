@@ -20,34 +20,26 @@ public class ParticleGrid {
 
         // Fill grid with air particles
 
-        for (int y = 0; y < length; y++) {
+        for (int x = 0; x < width; x++) {
 
-            for (int x = 0; x < width; x++) {
+            for (int y = 0; y < length; y++) {
 
                 this.setParticle(x, y, new Particle(Particles.AIR));
-
+                if(y==0)  this.setParticle(x, y, new Particle(Particles.WATER));
             }
         }
+
+        this.setParticle(0, 0, new Particle(Particles.WATER));
     }
 
     public Particle getParticle(int x, int y) {
         return this.grid[x][y];
     }
 
-    public Particle getParticle(GridPoint2 point) {
-        return getParticle(point.x, point.y);
-    }
-
-    public Particles getParticleType(GridPoint2 point) {
-
-        return getParticleType(point.x, point.y);
-
-    }
-
     public Particles getParticleType(int x, int y) {
 
         if (0 <= x && x < width && 0 <= y && y < length) {
-            return this.grid[x][y].getType();
+            return this.getParticle(x, y).getType();
         }
 
         return Particles.NULL;
@@ -60,16 +52,16 @@ public class ParticleGrid {
     }
 
     public void setParticle(GridPoint2 point, Particle p) {
-        this.grid[point.x][point.y] = p;
+        this.setParticle(point.x, point.y, p);
     }
 
     public void tick() {
 
         ParticleGrid nextGrid = new ParticleGrid();
 
-        for (int x = 0; x < width; x++) {
+        for (int x = width - 1; x >= 0; x--) {
 
-            for (int y = 0; y < length; y++) {
+            for (int y = length-1; y >= 0; y--) {
 
                 Particles type = this.getParticleType(x, y);
 
@@ -81,45 +73,13 @@ public class ParticleGrid {
                     case SAND:
                         // TODO : MAKE MORE EFECTIVE
                         if ( this.getParticleType(x, y - 1) == Particles.AIR ) {
-                            nextGrid.setParticle(x, y, new Particle(Particles.AIR));
                             nextGrid.setParticle(x, y - 1, new Particle(type));
                         }
                         else if ( this.getParticleType(x - 1, y - 1) == Particles.AIR ) {
-                            nextGrid.setParticle(x, y, new Particle(Particles.AIR));
                             nextGrid.setParticle(x - 1, y - 1, new Particle(type));
                         }
                         else if ( this.getParticleType(x + 1, y - 1) == Particles.AIR ) {
-                            nextGrid.setParticle(x, y, new Particle(Particles.AIR));
                             nextGrid.setParticle(x + 1, y - 1, new Particle(type));
-                        }
-                        else nextGrid.setParticle(x, y, new Particle(type));
-
-                        break;
-
-                    case WATER:
-                        // TODO : MAKE MORE EFECTIVE
-                        if ( this.getParticleType(x, y - 1) == Particles.AIR ) {
-                            nextGrid.setParticle(x, y, new Particle(Particles.AIR));
-                            nextGrid.setParticle(x, y - 1, new Particle(type));
-                        }
-                        else if ( this.getParticleType(x - 1, y - 1) == Particles.AIR ) {
-                            nextGrid.setParticle(x, y, new Particle(Particles.AIR));
-                            nextGrid.setParticle(x - 1, y - 1, new Particle(type));
-                        }
-                        else if ( this.getParticleType(x + 1, y - 1) == Particles.AIR ) {
-                            nextGrid.setParticle(x, y, new Particle(Particles.AIR));
-                            nextGrid.setParticle(x + 1, y - 1, new Particle(type));
-                        }
-                        else if (this.getParticleType(x + 1, y) == Particles.AIR )  {
-
-                            nextGrid.setParticle( x, y, new Particle(Particles.AIR));
-                            nextGrid.setParticle( x + 1, y, new Particle(Particles.WATER));
-
-                        }
-                        else if (this.getParticleType(x - 1, y) == Particles.AIR ) {
-
-                            nextGrid.setParticle(x, y, new Particle(Particles.AIR));
-                            nextGrid.setParticle(x - 1, y, new Particle(Particles.WATER));
                         }
                         else nextGrid.setParticle(x, y, new Particle(type));
 
