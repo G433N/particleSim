@@ -3,18 +3,12 @@ package com.main;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.particle.Particle;
@@ -27,7 +21,7 @@ import static java.lang.Math.floor;
 
 public class Main extends ApplicationAdapter {
 
-	public static final int pixelSize = 8;
+	public static final int pixelSize = 4;
 
 	private SpriteBatch batch;
 	private HashMap<String, Texture> textureHashMap;
@@ -115,16 +109,30 @@ public class Main extends ApplicationAdapter {
 	}
 
 	private void inputs() {
+
+
+		// get mousePos and mousePos -> gridPos
 		mousePos.set(Gdx.input.getX(), ParticleGrid.length*pixelSize - Gdx.input.getY());
 		gridPos.set(
 				(int) floor(mousePos.x/pixelSize),
 				(int) floor(mousePos.y/pixelSize)
 		);
 
+
+		// spawn particles
+
+		int brush = 4;
+
 		if ( Gdx.input.isButtonPressed(Input.Buttons.LEFT) ) {
 			if (spawn == 0) {
 				if (0 <= gridPos.x && gridPos.x < ParticleGrid.width && 0 <= gridPos.y && gridPos.y < ParticleGrid.length) { // TODO : MAKE TO METHOD
-					particleGrid.setParticle(gridPos, new Particle(spawnType));
+
+					for (int x = Math.max(gridPos.x-brush, 0); x < Math.min(gridPos.x+brush, ParticleGrid.width-1); x++) {
+						for (int y = Math.max(gridPos.y-brush, 0); y < Math.min(gridPos.y+brush, ParticleGrid.length-1); y++) {
+							particleGrid.setParticle(x, y, new Particle(spawnType));
+						}
+					}
+
 				}
 				spawn = spawnRate;
 			}
@@ -142,9 +150,9 @@ public class Main extends ApplicationAdapter {
 		for (int x = 0; x < particleGrid.width; x++) {
 			for (int y = 0; y < particleGrid.length; y++) {
 
-				String name = particleGrid.getParticle(x, y).getType().name().toLowerCase();
+				String name = particleGrid.getParticle(x, y).type.name().toLowerCase();
 
-				stage.getBatch().draw(textureHashMap.get(name), x * pixelSize, y * pixelSize);
+				stage.getBatch().draw(textureHashMap.get(name), x * pixelSize, y * pixelSize, pixelSize, pixelSize);
 			}
 		}
 

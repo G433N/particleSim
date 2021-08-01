@@ -30,13 +30,16 @@ public class ParticleGrid {
     }
 
     public Particle getParticle(int x, int y) {
-        return this.grid[x][y];
+        if (0 <= x && x < width && 0 <= y && y < length) {
+            return this.grid[x][y];
+        }
+        return new Particle(Particles.NULL);
     }
 
-    public Particles getParticleType(int x, int y) {
+    public Particles getParticleTypeSafe(int x, int y) {
 
         if (0 <= x && x < width && 0 <= y && y < length) {
-            return this.getParticle(x, y).getType();
+            return this.getParticle(x, y).type;
         }
 
         return Particles.NULL;
@@ -54,45 +57,52 @@ public class ParticleGrid {
 
     public void tick() {
 
-        ParticleGrid nextGrid = new ParticleGrid();
 
-        for (int x = width - 1; x >= 0; x--) {
+        for (int x = 0; x < width; x++) {
 
-            for (int y = length-1; y >= 0; y--) {
+            for (int y = 0; y < length; y++) {
 
-                Particles type = this.getParticleType(x, y);
+                switch (this.getParticleTypeSafe(x, y)) {
 
-                switch (type) {
-                    // If particle updates against update-flow remember to check if are in new grid
-                    case AIR:
-                        break;
-
+                    case WATER:
                     case SAND:
-                        // TODO : MAKE MORE EFECTIVE
-                        if ( this.getParticleType(x, y - 1) == Particles.AIR ) {
-                            nextGrid.setParticle(x, y - 1, new Particle(type));
-                        }
-                        else if ( this.getParticleType(x - 1, y - 1) == Particles.AIR ) {
-                            nextGrid.setParticle(x - 1, y - 1, new Particle(type));
-                        }
-                        else if ( this.getParticleType(x + 1, y - 1) == Particles.AIR ) {
-                            nextGrid.setParticle(x + 1, y - 1, new Particle(type));
-                        }
-                        else nextGrid.setParticle(x, y, new Particle(type));
-
+                        updateParticle(x, y);
                         break;
 
                     default:
-                        nextGrid.setParticle(x, y, new Particle(type));
                         break;
                 }
             }
         }
-
-        this.grid = nextGrid.grid;
     }
 
-    public void move() {
-        // Make particles change place
+    public void updateParticle(int x, int y) { // TODO : Make switch
+        Particle particle = this.getParticle(x, y);
+        int density = particle.density;
+
+        if ( this.getParticle(x, y - 1).density < density) {
+            move(x, y, 0, - 1);
+        }
+        else if ( this.getParticle(x - 1, y - 1).density < density ) {
+            move(x, y, -1, - 1);
+        }
+        else if ( this.getParticle(x + 1, y - 1).density < density ) {
+            move(x, y, 1, - 1);
+        }
+        else if (!particle.liquid) return;
+        else if ( this.getParticle(x + 1, y).density < density) {
+            move(x, y, 1, 0);
+        }
+        else if ( this.getParticle(x - 1, y).density < density) {
+            move(x, y, - 1, 0);
+        }
+    }
+
+    private void move(int x, int y, int vx, int vy) {
+
+        Particle temp = this.getParticle(x+vx, y+vy);
+        this.setParticle(x+vx, y+vy, this.getParticle(x, y));
+        this.setParticle(x, y, temp);
+
     }
 }

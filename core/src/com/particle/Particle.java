@@ -2,17 +2,35 @@ package com.particle;
 
 public class Particle {
 
-    private final Particles type;
-    // sprite
-    // flags
-
-    public int velocity = 1;
+    public final Particles type;
+    public boolean liquid = false;
+    public int density;
 
     public Particle(Particles type) {
         this.type = type;
-    }
 
-    public Particles getType() {
-        return type;
+        switch (type) {
+
+            case AIR:
+                density = 0;
+                break;
+
+            case NULL:
+                density = 999;
+                break;
+
+            case SAND:
+                density = 2;
+                break;
+
+            case WATER:
+                density = 1;
+                liquid = true;
+                break;
+
+            default:
+                break;
+
+        }
     }
 }
