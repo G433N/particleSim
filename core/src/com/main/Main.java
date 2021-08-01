@@ -3,18 +3,12 @@ package com.main;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.particle.Particle;
@@ -24,16 +18,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static java.lang.Math.floor;
-import static java.lang.Math.max;
 
-// TODO : Add grass
 // TODO : Add editor tools, like brush size, fast selecet, spawn speed
-// TODO : Add electicity
 
 
 public class Main extends ApplicationAdapter {
 
-	public static final int pixelSize = 8;
+	public static final int pixelSize = 4;
 
 	private SpriteBatch batch;
 	private HashMap<String, Texture> textureHashMap;
@@ -93,7 +84,7 @@ public class Main extends ApplicationAdapter {
 		stage.addActor(new PButton("Tick", new GridPoint2(50, 70), new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				if (!run) particleGrid.tick();
+				if (!run) particleGrid.update();
 			}
 		}));
 
@@ -113,17 +104,40 @@ public class Main extends ApplicationAdapter {
 
 	}
 
+
+
 	@Override
 	public void render () {
 
 		inputs();
 
-		if(run) particleGrid.tick();
+		if(run) particleGrid.update();
 
-		//draw();
+		//slowMode();
 
-		newDraw();
+		draw();
 
+	}
+
+
+	//slowMode();
+
+	private int i = 0;
+	private int max = ParticleGrid.width * ParticleGrid.length;
+
+	private void slowMode() {
+		if (this.i >= this.max) {
+			this.i = 0;
+		}
+
+		int y = this.i % ParticleGrid.length;
+		int x = Math.floorDiv(this.i, ParticleGrid.width);
+
+		particleGrid.updateParticle(x, y);
+
+		System.out.println(i);
+
+		i++;
 	}
 
 	private void inputs() {
@@ -145,7 +159,7 @@ public class Main extends ApplicationAdapter {
 		else spawn = 0;
 	}
 
-	private void newDraw() {
+	private void draw() {
 
 		ScreenUtils.clear(1, 1, 1, 1);
 
@@ -156,7 +170,7 @@ public class Main extends ApplicationAdapter {
 
 				String name = particleGrid.getParticle(x, y).getType().name().toLowerCase();
 
-				stage.getBatch().draw(textureHashMap.get(name), x * pixelSize, y * pixelSize);
+				stage.getBatch().draw(textureHashMap.get(name), x * pixelSize, y * pixelSize, pixelSize, pixelSize);
 			}
 		}
 
@@ -164,33 +178,6 @@ public class Main extends ApplicationAdapter {
 
 		stage.act();
 		stage.draw();
-	}
-
-	private void draw() {
-
-		ScreenUtils.clear(1, 1, 1, 1);
-
-		batch.begin();
-
-		for (int y = 0; y < particleGrid.length; y++) {
-			for (int x = 0; x < particleGrid.width; x++) {
-
-				String name = particleGrid.getParticle(x, y).getType().name().toLowerCase();
-
-				batch.draw(textureHashMap.get(name), x * pixelSize, y * pixelSize);
-			}
-		}
-
-
-		// FIXME : Beautiful debug
-		/*
-		font.draw(batch, "Mousepos X: " + mousePos.x, 20, 500);
-		font.draw(batch, "Mousepos Y: " + mousePos.y, 20, 480);
-		font.draw(batch, "Gridpos X: " + gridPos.x, 20, 460);
-		font.draw(batch, "Gridpos Y: " + gridPos.y, 20, 440);
-*/
-
-		batch.end();
 	}
 
 	@Override
