@@ -63,7 +63,6 @@ public class Main extends ApplicationAdapter {
 		textureHashMap.put("air", new Texture("particle/air.png"));
 		textureHashMap.put("sand", new Texture("particle/sand.png"));
 		textureHashMap.put("water", new Texture("particle/water.png"));
-		textureHashMap.put("selected", new Texture("selected.png"));
 	}
 
 	private void UI() {
