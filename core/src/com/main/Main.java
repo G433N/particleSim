@@ -44,6 +44,8 @@ public class Main extends ApplicationAdapter {
 	private Vector2 mousePos = new Vector2();
 	private GridPoint2 gridPos = new GridPoint2(); //IntVector2;
 
+	private boolean run = true;
+
 	private int spawn = 0;
 	private int spawnRate = 1;
 	private int spawnIndex = 2;
@@ -71,18 +73,31 @@ public class Main extends ApplicationAdapter {
 		textureHashMap.put("metal", new Texture("particle/metal.png"));
 		textureHashMap.put("mud", new Texture("particle/mud.png"));
 		textureHashMap.put("grass", new Texture("particle/grass.png"));
-		textureHashMap.put("selected", new Texture("selected.png"));
 	}
 
 	private void UI() {
 		stage = new Stage();
 		Gdx.input.setInputProcessor(stage);
 
-		spawnIndexLabel = new PLabel(spawnType.name().toLowerCase(), new GridPoint2(60, 50));
+		spawnIndexLabel = new PLabel("Particle: " + spawnType.name().toLowerCase(), new GridPoint2(50, 50));
 
 		stage.addActor(spawnIndexLabel);
 
-		stage.addActor(new PButton("+", new GridPoint2(50, 50), new ChangeListener() {
+		stage.addActor(new PButton("Pause", new GridPoint2(50, 90), new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				run = !run;
+			}
+		}));
+
+		stage.addActor(new PButton("Tick", new GridPoint2(50, 70), new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				if (!run) particleGrid.tick();
+			}
+		}));
+
+		stage.addActor(new PButton("#", new GridPoint2(40, 50), new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				spawnIndex++;
@@ -91,7 +106,7 @@ public class Main extends ApplicationAdapter {
 
 				spawnType = Particles.getParticle(spawnIndex);
 
-				spawnIndexLabel.setText(spawnType.name().toLowerCase());
+				spawnIndexLabel.setText("Particle: " + spawnType.name().toLowerCase());
 			}
 		}));
 
@@ -103,7 +118,7 @@ public class Main extends ApplicationAdapter {
 
 		inputs();
 
-		particleGrid.tick();
+		if(run) particleGrid.tick();
 
 		//draw();
 
