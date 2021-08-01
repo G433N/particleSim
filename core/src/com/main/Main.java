@@ -53,7 +53,7 @@ public class Main extends ApplicationAdapter {
 		particleGrid = new ParticleGrid();
 	}
 
-	private void ImageLoading() {
+	private void ImageLoading() { // TODO : Add automated loading
 		textureHashMap.put("air", new Texture("particle/air.png"));
 		textureHashMap.put("sand", new Texture("particle/sand.png"));
 		textureHashMap.put("water", new Texture("particle/water.png"));
@@ -97,6 +97,8 @@ public class Main extends ApplicationAdapter {
 
 	}
 
+
+
 	@Override
 	public void render () {
 
@@ -106,6 +108,27 @@ public class Main extends ApplicationAdapter {
 
 		draw();
 
+	}
+
+
+	//slowMode();
+
+	private int i = 0;
+	private int max = ParticleGrid.width * ParticleGrid.length;
+
+	private void slowMode() {
+		if (this.i >= this.max) {
+			this.i = 0;
+		}
+
+		int y = this.i % ParticleGrid.length;
+		int x = Math.floorDiv(this.i, ParticleGrid.width);
+
+		particleGrid.updateParticle(x, y);
+
+		System.out.println(i);
+
+		i++;
 	}
 
 	private void inputs() {

@@ -42,7 +42,7 @@ public class ParticleGrid {
             return this.getParticle(x, y).type;
         }
 
-        return Particles.NULL;
+        return wall.density;
     }
 
     public void setParticle(int x, int y, Particle p) {
@@ -55,7 +55,7 @@ public class ParticleGrid {
         this.setParticle(point.x, point.y, p);
     }
 
-    public void tick() {
+    public void updateParticle(int x, int y) {
 
 
         for (int x = 0; x < width; x++) {
@@ -72,6 +72,26 @@ public class ParticleGrid {
                     default:
                         break;
                 }
+                this.updateParticlePosition(x, y);
+                break;
+
+            case GRASS:
+                if (this.getParticleType(x, y + 1) != Particles.AIR) {
+                    this.setParticle(x, y, new Particle(Particles.DIRT));
+                }
+                this.updateParticlePosition(x, y);
+                break;
+
+            default:
+                throw new IllegalStateException("Unexpected value: " + type);
+        }
+    }
+
+    public void update() {
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < length; y++) {
+                updateParticle(x, y);
             }
         }
     }

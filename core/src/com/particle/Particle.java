@@ -6,7 +6,7 @@ public class Particle {
     public boolean liquid = false;
     public int density;
 
-    public Particle(Particles type) {
+    public Particle(Particles type) { //Load from data
         this.type = type;
 
         switch (type) {
