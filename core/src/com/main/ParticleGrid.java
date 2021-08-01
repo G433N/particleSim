@@ -25,11 +25,8 @@ public class ParticleGrid {
             for (int y = 0; y < length; y++) {
 
                 this.setParticle(x, y, new Particle(Particles.AIR));
-                if(y==0)  this.setParticle(x, y, new Particle(Particles.WATER));
             }
         }
-
-        this.setParticle(0, 0, new Particle(Particles.WATER));
     }
 
     public Particle getParticle(int x, int y) {
