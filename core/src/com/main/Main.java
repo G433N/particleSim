@@ -121,7 +121,7 @@ public class Main extends ApplicationAdapter {
 
 		// spawn particles
 
-		int brush = 4;
+		int brush = 2;
 
 		if ( Gdx.input.isButtonPressed(Input.Buttons.LEFT) ) {
 			if (spawn == 0) {

@@ -7,8 +7,8 @@ import com.particle.Particles;
 public class ParticleGrid {
 
     // TODO : size get()
-    public static int width = 120;
-    public static int length = 120;
+    public static int width = 64;
+    public static int length = 64;
 
     Particle[][] grid;
 
