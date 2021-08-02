@@ -11,7 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.particle.Particle;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +35,7 @@ public class Main extends ApplicationAdapter {
 	private int spawn = 0;
 	private int spawnRate = 1;
 	private int spawnIndex = 0;
-	private String spawnType = Particle.particleTypes.get(spawnIndex);
+	private String spawnType = Particle.TYPES.get(spawnIndex);
 
 	private PLabel spawnIndexLabel;
 
@@ -85,9 +84,9 @@ public class Main extends ApplicationAdapter {
 			public void changed(ChangeEvent event, Actor actor) {
 				spawnIndex++;
 
-				if (spawnIndex >= Particle.particleTypes.size()) spawnIndex = 0;
+				if (spawnIndex >= Particle.TYPES.size()) spawnIndex = 0;
 
-				spawnType = Particle.particleTypes.get(spawnIndex);
+				spawnType = Particle.TYPES.get(spawnIndex);
 
 				spawnIndexLabel.setText("Particle: " + spawnType);
 			}

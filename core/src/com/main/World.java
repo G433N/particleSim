@@ -1,7 +1,6 @@
 package com.main;
 
 import com.badlogic.gdx.math.GridPoint2;
-import com.particle.Particle;
 
 public class World {
 
