@@ -6,8 +6,8 @@ public class World {
 
 
     // TODO : size get()
-    public static int width = 64;
-    public static int length = 64;
+    public static int width = 512;
+    public static int length = 512;
 
     Particle[][] grid;
 

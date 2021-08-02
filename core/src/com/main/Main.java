@@ -19,7 +19,7 @@ import static java.lang.Math.floor;
 
 public class Main extends ApplicationAdapter {
 
-	public static final int pixelSize = 4;
+	public static final int pixelSize = 2;
 
 	private SpriteBatch batch;
 	private HashMap<String, Texture> textureHashMap;
@@ -27,13 +27,13 @@ public class Main extends ApplicationAdapter {
 
 	private World world;
 
-	private Vector2 mousePos = new Vector2();
-	private GridPoint2 gridPos = new GridPoint2();
+	private final Vector2 mousePos = new Vector2();
+	private final GridPoint2 gridPos = new GridPoint2();
 
 	private boolean run = true;
 
 	private int spawn = 0;
-	private int spawnRate = 1;
+	private final int spawnRate = 1;
 	private int spawnIndex = 0;
 	private String spawnType = Particle.TYPES.get(spawnIndex);
 
@@ -110,7 +110,7 @@ public class Main extends ApplicationAdapter {
 
 
 		// get mousePos and mousePos -> gridPos
-		mousePos.set(Gdx.input.getX(), world.length*pixelSize - Gdx.input.getY());
+		mousePos.set(Gdx.input.getX(), World.length * pixelSize - Gdx.input.getY());
 		gridPos.set(
 				(int) floor(mousePos.x/pixelSize),
 				(int) floor(mousePos.y/pixelSize)
@@ -119,14 +119,14 @@ public class Main extends ApplicationAdapter {
 
 		// spawn particles
 
-		int brush = 2;
+		int brush = 8;
 
 		if ( Gdx.input.isButtonPressed(Input.Buttons.LEFT) ) {
 			if (spawn == 0) {
-				if (0 <= gridPos.x && gridPos.x < world.width && 0 <= gridPos.y && gridPos.y < world.length) { // TODO : MAKE TO METHOD
+				if (0 <= gridPos.x && gridPos.x < World.width && 0 <= gridPos.y && gridPos.y < World.length) { // TODO : MAKE TO METHOD
 
-					for (int x = Math.max(gridPos.x-brush, 0); x < Math.min(gridPos.x+brush, world.width-1); x++) {
-						for (int y = Math.max(gridPos.y-brush, 0); y < Math.min(gridPos.y+brush, world.length-1); y++) {
+					for (int x = Math.max(gridPos.x-brush, 0); x < Math.min(gridPos.x+brush, World.width -1); x++) {
+						for (int y = Math.max(gridPos.y-brush, 0); y < Math.min(gridPos.y+brush, World.length -1); y++) {
 							world.setParticle(x, y, new Particle(spawnType));
 						}
 					}
@@ -145,12 +145,12 @@ public class Main extends ApplicationAdapter {
 
 		stage.getBatch().begin();
 
-		for (int x = 0; x < world.width; x++) {
-			for (int y = 0; y < world.length; y++) {
+		for (int x = 0; x < World.width; x++) {
+			for (int y = 0; y < World.length; y++) {
 
-				String name = world.getParticle(x, y).type;
+				String type = world.getParticle(x, y).type;
 
-				stage.getBatch().draw(textureHashMap.get(name), x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+				stage.getBatch().draw(textureHashMap.get(type), x * pixelSize, y * pixelSize, pixelSize, pixelSize);
 			}
 		}
 

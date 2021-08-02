@@ -11,10 +11,10 @@ public class Particle {
     static {
 
         DATA = new HashMap<>();
-        DATA.put("air"     ,   new Particle(0, false));
-        DATA.put("null"    ,   new Particle(999, false));
-        DATA.put("sand"    ,   new Particle(2, false));
-        DATA.put("water"   ,   new Particle(1, true));
+        DATA.put("air"     ,   new Particle(0,  false   ));
+        DATA.put("null"    ,   new Particle(999,false   ));
+        DATA.put("sand"    ,   new Particle(2,  false   ));
+        DATA.put("water"   ,   new Particle(1,  true    ));
 
 
         TYPES = new ArrayList<>();
@@ -39,7 +39,7 @@ public class Particle {
         this.liquid = data.liquid;
     }
 
-    private Particle(int density, boolean liquid) {
+    private Particle(int density, boolean liquid) { // for data storage
         this.type = "null";
         this.density = density;
         this.liquid = liquid;
