@@ -22,6 +22,6 @@ public class PLabel extends Label{
 
     public PLabel(String text, GridPoint2 position) {
         super(text, labelStyle);
-        setPosition( ParticleGrid.width * Main.pixelSize + position.x, position.y );
+        setPosition( World.width * Main.pixelSize + position.x, position.y );
     }
 }

@@ -24,7 +24,7 @@ public class PButton extends TextButton {// Particle button temp name
 
     public PButton(String text, GridPoint2 position, ChangeListener changeListener) {
         super(text, textButtonStyle);
-        setPosition( ParticleGrid.width * Main.pixelSize + position.x, position.y );
+        setPosition( World.width * Main.pixelSize + position.x, position.y );
         addListener(changeListener);
     }
 }

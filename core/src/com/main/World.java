@@ -2,9 +2,9 @@ package com.main;
 
 import com.badlogic.gdx.math.GridPoint2;
 import com.particle.Particle;
-import com.particle.Particles;
 
-public class ParticleGrid {
+public class World {
+
 
     // TODO : size get()
     public static int width = 64;
@@ -14,7 +14,7 @@ public class ParticleGrid {
 
 
 
-    public ParticleGrid() {
+    public World() {
 
         this.grid = new Particle[width][length];
 
@@ -24,7 +24,7 @@ public class ParticleGrid {
 
             for (int y = 0; y < length; y++) {
 
-                this.setParticle(x, y, new Particle(Particles.AIR));
+                this.setParticle(x, y, new Particle("air"));
             }
         }
     }
@@ -33,16 +33,16 @@ public class ParticleGrid {
         if (0 <= x && x < width && 0 <= y && y < length) {
             return this.grid[x][y];
         }
-        return new Particle(Particles.NULL);
+        return new Particle("null");
     }
 
-    public Particles getParticleTypeSafe(int x, int y) {
+    public String getParticleTypeSafe(int x, int y) {
 
         if (0 <= x && x < width && 0 <= y && y < length) {
             return this.getParticle(x, y).type;
         }
 
-        return Particles.NULL;
+        return "null";
     }
 
     public void setParticle(int x, int y, Particle p) {
@@ -64,8 +64,8 @@ public class ParticleGrid {
 
                 switch (this.getParticleTypeSafe(x, y)) {
 
-                    case WATER:
-                    case SAND:
+                    case "water":
+                    case "sand":
                         updateParticle(x, y);
                         break;
 

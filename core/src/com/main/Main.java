@@ -12,7 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.particle.Particle;
-import com.particle.Particles;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +26,7 @@ public class Main extends ApplicationAdapter {
 	private HashMap<String, Texture> textureHashMap;
 	private Stage stage;
 
-	private ParticleGrid particleGrid;
+	private World world;
 
 	private Vector2 mousePos = new Vector2();
 	private GridPoint2 gridPos = new GridPoint2();
@@ -36,8 +35,8 @@ public class Main extends ApplicationAdapter {
 
 	private int spawn = 0;
 	private int spawnRate = 1;
-	private int spawnIndex = 2;
-	private Particles spawnType = Particles.getParticle(spawnIndex);
+	private int spawnIndex = 0;
+	private String spawnType = Particle.particleTypes.get(spawnIndex);
 
 	private PLabel spawnIndexLabel;
 
@@ -50,7 +49,7 @@ public class Main extends ApplicationAdapter {
 
 		ImageLoading();
 
-		particleGrid = new ParticleGrid();
+		world = new World();
 	}
 
 	private void ImageLoading() {
@@ -63,7 +62,7 @@ public class Main extends ApplicationAdapter {
 		stage = new Stage();
 		Gdx.input.setInputProcessor(stage);
 
-		spawnIndexLabel = new PLabel("Particle: " + spawnType.name().toLowerCase(), new GridPoint2(50, 50));
+		spawnIndexLabel = new PLabel("Particle: " + spawnType, new GridPoint2(50, 50));
 
 		stage.addActor(spawnIndexLabel);
 
@@ -77,7 +76,7 @@ public class Main extends ApplicationAdapter {
 		stage.addActor(new PButton("Tick", new GridPoint2(50, 70), new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				if (!run) particleGrid.tick();
+				if (!run) world.tick();
 			}
 		}));
 
@@ -86,11 +85,11 @@ public class Main extends ApplicationAdapter {
 			public void changed(ChangeEvent event, Actor actor) {
 				spawnIndex++;
 
-				if (spawnIndex >= Particles.getAmount()) spawnIndex = 1;
+				if (spawnIndex >= Particle.particleTypes.size()) spawnIndex = 0;
 
-				spawnType = Particles.getParticle(spawnIndex);
+				spawnType = Particle.particleTypes.get(spawnIndex);
 
-				spawnIndexLabel.setText("Particle: " + spawnType.name().toLowerCase());
+				spawnIndexLabel.setText("Particle: " + spawnType);
 			}
 		}));
 
@@ -102,7 +101,7 @@ public class Main extends ApplicationAdapter {
 
 		inputs();
 
-		if (run) particleGrid.tick();
+		if (run) world.tick();
 
 		draw();
 
@@ -112,7 +111,7 @@ public class Main extends ApplicationAdapter {
 
 
 		// get mousePos and mousePos -> gridPos
-		mousePos.set(Gdx.input.getX(), ParticleGrid.length*pixelSize - Gdx.input.getY());
+		mousePos.set(Gdx.input.getX(), world.length*pixelSize - Gdx.input.getY());
 		gridPos.set(
 				(int) floor(mousePos.x/pixelSize),
 				(int) floor(mousePos.y/pixelSize)
@@ -125,11 +124,11 @@ public class Main extends ApplicationAdapter {
 
 		if ( Gdx.input.isButtonPressed(Input.Buttons.LEFT) ) {
 			if (spawn == 0) {
-				if (0 <= gridPos.x && gridPos.x < ParticleGrid.width && 0 <= gridPos.y && gridPos.y < ParticleGrid.length) { // TODO : MAKE TO METHOD
+				if (0 <= gridPos.x && gridPos.x < world.width && 0 <= gridPos.y && gridPos.y < world.length) { // TODO : MAKE TO METHOD
 
-					for (int x = Math.max(gridPos.x-brush, 0); x < Math.min(gridPos.x+brush, ParticleGrid.width-1); x++) {
-						for (int y = Math.max(gridPos.y-brush, 0); y < Math.min(gridPos.y+brush, ParticleGrid.length-1); y++) {
-							particleGrid.setParticle(x, y, new Particle(spawnType));
+					for (int x = Math.max(gridPos.x-brush, 0); x < Math.min(gridPos.x+brush, world.width-1); x++) {
+						for (int y = Math.max(gridPos.y-brush, 0); y < Math.min(gridPos.y+brush, world.length-1); y++) {
+							world.setParticle(x, y, new Particle(spawnType));
 						}
 					}
 
@@ -147,10 +146,10 @@ public class Main extends ApplicationAdapter {
 
 		stage.getBatch().begin();
 
-		for (int x = 0; x < particleGrid.width; x++) {
-			for (int y = 0; y < particleGrid.length; y++) {
+		for (int x = 0; x < world.width; x++) {
+			for (int y = 0; y < world.length; y++) {
 
-				String name = particleGrid.getParticle(x, y).type.name().toLowerCase();
+				String name = world.getParticle(x, y).type;
 
 				stage.getBatch().draw(textureHashMap.get(name), x * pixelSize, y * pixelSize, pixelSize, pixelSize);
 			}
