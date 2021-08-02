@@ -32,13 +32,6 @@ public class Main extends ApplicationAdapter {
 
 	private boolean run = true;
 
-	private int spawn = 0;
-	private final int spawnRate = 1;
-	private int spawnIndex = 0;
-	private String spawnType = Particle.TYPES.get(spawnIndex);
-
-	private PLabel spawnIndexLabel;
-
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
@@ -56,6 +49,8 @@ public class Main extends ApplicationAdapter {
 		textureHashMap.put("sand", new Texture("particle/sand.png"));
 		textureHashMap.put("water", new Texture("particle/water.png"));
 	}
+
+	private PLabel spawnIndexLabel;
 
 	private void UI() {
 		stage = new Stage();
@@ -105,6 +100,13 @@ public class Main extends ApplicationAdapter {
 		draw();
 
 	}
+
+	// Input handling
+
+	private int spawn = 0;
+	private final int spawnRate = 1;
+	private int spawnIndex = 0;
+	private String spawnType = Particle.TYPES.get(spawnIndex);
 
 	private void inputs() {
 

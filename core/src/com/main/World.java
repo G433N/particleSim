@@ -63,8 +63,8 @@ public class World {
 
                 switch (this.getParticleTypeSafe(x, y)) {
 
-                    case "water":
                     case "sand":
+                    case "water":
                         updateParticle(x, y);
                         break;
 
