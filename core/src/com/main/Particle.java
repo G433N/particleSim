@@ -1,5 +1,7 @@
 package com.main;
 
+import com.badlogic.gdx.math.GridPoint2;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -29,6 +31,8 @@ public class Particle {
     public final String type;
     public boolean liquid;
     public int density;
+    public boolean updated = false;
+    public int dir = 1;
 
     public Particle(String type) {
         this.type = type;
@@ -44,4 +48,12 @@ public class Particle {
         this.density = density;
         this.liquid = liquid;
     }
+    /*
+    a = 10
+    v = v_0 + a * deltaT
+    V vector2 (v_x, v_y)
+    V vector3 (n_v_x, n_v_y, v)
+    V vector2 (radianer, v)
+    p = p_0 + v * deltaT
+     */
 }

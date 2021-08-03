@@ -2,12 +2,14 @@ package com.main;
 
 import com.badlogic.gdx.math.GridPoint2;
 
+import java.util.Random;
+
 public class World {
 
 
     // TODO : size get()
-    public static int width = 512;
-    public static int length = 512;
+    public static int width = 128;
+    public static int length = 128;
 
     Particle[][] grid;
 
@@ -56,18 +58,29 @@ public class World {
 
     public void tick() {
 
-
         for (int x = 0; x < width; x++) {
-
             for (int y = 0; y < length; y++) {
 
-                switch (this.getParticleTypeSafe(x, y)) {
+                this.getParticle(x, y).updated = false;
+            }
+        }
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < length; y++) {
+
+                Particle particle = this.getParticle(x, y);
+                String type = particle.type;
+
+                //if (particle.updated) continue;
+
+                switch (type) {
 
                     case "sand":
                     case "water":
                         updateParticle(x, y);
+                        updateParticle(x, y);
+                        particle.updated = true;
                         break;
-
                     default:
                         break;
                 }
@@ -78,22 +91,23 @@ public class World {
     public void updateParticle(int x, int y) { // TODO : Make switch
         Particle particle = this.getParticle(x, y);
         int density = particle.density;
+        //GridPoint2 velocity = new GridPoint2();
+
+        java.util.Random random = new Random();
+        int dir = random.nextInt(2);
+
+        if (dir == 0) dir = -1;
 
         if ( this.getParticle(x, y - 1).density < density) {
             move(x, y, 0, - 1);
         }
-        else if ( this.getParticle(x - 1, y - 1).density < density ) {
-            move(x, y, -1, - 1);
-        }
-        else if ( this.getParticle(x + 1, y - 1).density < density ) {
-            move(x, y, 1, - 1);
+        else if (particle.updated); // for better spread
+        else if ( this.getParticle(x + dir, y - 1).density < density ) {
+            move(x, y, dir, - 1);
         }
         else if (!particle.liquid) return;
-        else if ( this.getParticle(x + 1, y).density < density) {
-            move(x, y, 1, 0);
-        }
-        else if ( this.getParticle(x - 1, y).density < density) {
-            move(x, y, - 1, 0);
+        else if ( this.getParticle(x + dir, y).density < density) {
+            move(x, y, dir, 0);
         }
     }
 
@@ -102,6 +116,5 @@ public class World {
         Particle temp = this.getParticle(x+vx, y+vy);
         this.setParticle(x+vx, y+vy, this.getParticle(x, y));
         this.setParticle(x, y, temp);
-
     }
 }

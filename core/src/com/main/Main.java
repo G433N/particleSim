@@ -19,7 +19,7 @@ import static java.lang.Math.floor;
 
 public class Main extends ApplicationAdapter {
 
-	public static final int pixelSize = 2;
+	public static final int pixelSize = 4;
 
 	private SpriteBatch batch;
 	private HashMap<String, Texture> textureHashMap;
@@ -107,6 +107,7 @@ public class Main extends ApplicationAdapter {
 	private final int spawnRate = 1;
 	private int spawnIndex = 0;
 	private String spawnType = Particle.TYPES.get(spawnIndex);
+	int brush = 8;
 
 	private void inputs() {
 
@@ -121,7 +122,7 @@ public class Main extends ApplicationAdapter {
 
 		// spawn particles
 
-		int brush = 8;
+
 
 		if ( Gdx.input.isButtonPressed(Input.Buttons.LEFT) ) {
 			if (spawn == 0) {
