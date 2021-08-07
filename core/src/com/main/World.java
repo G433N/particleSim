@@ -78,7 +78,6 @@ public class World {
                     case "sand":
                     case "water":
                         updateParticle(x, y);
-                        updateParticle(x, y);
                         particle.updated = true;
                         break;
                     default:
