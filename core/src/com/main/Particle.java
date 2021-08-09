@@ -1,6 +1,7 @@
 package com.main;
 
 import com.badlogic.gdx.math.Vector2;
+import com.main.math.Float2;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,8 +33,8 @@ public class Particle {
     public boolean liquid;
     public int density;
     public boolean updated = false;
-    public Vector2 velocity = new Vector2();
-    // TODO : Add position as Vector2 because simpler
+    public Float2 velocity = new Float2();
+    // TODO : Add position as Int2 because simpler
 
     public Particle(String type) {
         this.type = type;
@@ -49,6 +50,7 @@ public class Particle {
         this.density = density;
         this.liquid = liquid;
     }
+
     /*
     a = 10
     v = v_0 + a * deltaT

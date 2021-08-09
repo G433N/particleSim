@@ -1,10 +1,12 @@
-package com.main;
+package com.main.ui;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.main.Main;
+import com.main.World;
 
 public class PButton extends TextButton {// Particle button temp name
 

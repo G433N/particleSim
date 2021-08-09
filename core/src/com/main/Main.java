@@ -11,6 +11,10 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.main.math.Float2;
+import com.main.math.Int2;
+import com.main.ui.PButton;
+import com.main.ui.PLabel;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,8 +32,8 @@ public class Main extends ApplicationAdapter {
 
 	private World world;
 
-	private final Vector2 mousePos = new Vector2();
-	private final GridPoint2 gridPos = new GridPoint2();
+	private final Float2 mousePos = new Float2();
+	private final Int2 gridPos = new Int2();
 
 	private boolean run = true;
 
@@ -128,25 +132,22 @@ public class Main extends ApplicationAdapter {
 
 		// spawn particles
 
-
-
 		if ( Gdx.input.isButtonPressed(Input.Buttons.LEFT) ) {
 			if (spawn == 0) {
 				if (0 <= gridPos.x && gridPos.x < World.width && 0 <= gridPos.y && gridPos.y < World.length) { // TODO : MAKE TO METHOD
 
 					for (int x = Math.max(gridPos.x-brush, 0); x < Math.min(gridPos.x+brush, World.width -1); x++) {
 						for (int y = Math.max(gridPos.y-brush, 0); y < Math.min(gridPos.y+brush, World.length -1); y++) {
+
 							if(random.nextInt(spawnChance) == 0) {
 								world.setParticle(x, y, new Particle(spawnType));
 							}
+
 						}
 					}
-				}
-				spawn = spawnRate;
-			}
-			else spawn--;
-		}
-		else spawn = 0;
+				} spawn = spawnRate;
+			} else spawn--;
+		} else spawn = 0;
 	}
 
 	private void draw() {
