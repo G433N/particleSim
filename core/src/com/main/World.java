@@ -1,8 +1,11 @@
 package com.main;
 
 import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.math.Vector2;
 
 import java.util.Random;
+
+import static java.lang.Math.round;
 
 public class World {
 
@@ -10,6 +13,8 @@ public class World {
     // TODO : size get()
     public static int width = 128;
     public static int length = 128;
+
+    private final int gravity = -10;
 
     Particle[][] grid;
 
@@ -37,6 +42,10 @@ public class World {
         return new Particle("null");
     }
 
+    public Particle getParticle(Vector2 position) {
+        return getParticle((int) position.x, (int) position.y);
+    }
+
     public String getParticleTypeSafe(int x, int y) {
 
         if (0 <= x && x < width && 0 <= y && y < length) {
@@ -56,11 +65,10 @@ public class World {
         this.setParticle(point.x, point.y, p);
     }
 
-    public void tick() {
+    public void tick(float deltaTime) {
 
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < length; y++) {
-
                 this.getParticle(x, y).updated = false;
             }
         }
@@ -71,13 +79,13 @@ public class World {
                 Particle particle = this.getParticle(x, y);
                 String type = particle.type;
 
-                //if (particle.updated) continue;
+                if (particle.updated) continue;
 
                 switch (type) {
 
                     case "sand":
                     case "water":
-                        updateParticle(x, y);
+                        updateParticle(x, y, deltaTime);
                         particle.updated = true;
                         break;
                     default:
@@ -87,10 +95,10 @@ public class World {
         }
     }
 
-    public void updateParticle(int x, int y) { // TODO : Make switch
+    public void updateParticle(int x, int y, float deltaTime) { // TODO : Make switch
         Particle particle = this.getParticle(x, y);
         int density = particle.density;
-        //GridPoint2 velocity = new GridPoint2();
+
 
         java.util.Random random = new Random();
         int dir = random.nextInt(2);
@@ -98,22 +106,59 @@ public class World {
         if (dir == 0) dir = -1;
 
         if ( this.getParticle(x, y - 1).density < density) {
-            move(x, y, 0, - 1);
+
+            particle.velocity.y += gravity * deltaTime;
+
+            applyVelocity(new Vector2(x, y), particle.velocity);
+            return;
         }
-        else if (particle.updated); // for better spread
-        else if ( this.getParticle(x + dir, y - 1).density < density ) {
-            move(x, y, dir, - 1);
+        else particle.velocity.y = 0;
+
+        if ( this.getParticle(x + dir, y - 1).density < density ) {
+            movePosition(x, y, dir, - 1);
+            return;
         }
-        else if (!particle.liquid) return;
-        else if ( this.getParticle(x + dir, y).density < density) {
-            move(x, y, dir, 0);
+
+        if (!particle.liquid) return;
+
+        if ( this.getParticle(x + dir, y).density < density) {
+            movePosition(x, y, dir, 0);
         }
     }
 
-    private void move(int x, int y, int vx, int vy) {
-
+    private void movePosition(int x, int y, int vx, int vy) {
         Particle temp = this.getParticle(x+vx, y+vy);
         this.setParticle(x+vx, y+vy, this.getParticle(x, y));
         this.setParticle(x, y, temp);
+    }
+
+    private void applyVelocity(Vector2 position, Vector2 velocity) {
+
+        Vector2 goal = new Vector2(position)
+                .add(velocity);
+
+        final float distance = position.dst(goal);
+        final int roundDistance = round(distance);
+
+        Vector2 normal = new Vector2(goal)
+                .add(-position.x, -position.y)
+                .scl(1 / distance);
+
+        Vector2 target = new Vector2(position);
+        int density = this.getParticle(position).density;
+
+        for (int t = 0; t < roundDistance;t++) {
+
+            target.add(normal);
+
+            if (this.getParticle(round(target.x), round(target.y)).density < density) {
+
+                Vector2 delta = new Vector2(round(target.x)-position.x, round(target.y)-position.y);
+
+                movePosition((int) position.x, (int) position.y, (int) delta.x, (int) delta.y);
+                position.add((int) delta.x, (int) delta.y);
+
+            } else break;
+        }
     }
 }

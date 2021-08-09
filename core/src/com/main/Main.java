@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import static java.lang.Math.floor;
 
@@ -70,7 +71,7 @@ public class Main extends ApplicationAdapter {
 		stage.addActor(new PButton("Tick", new GridPoint2(50, 70), new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				if (!run) world.tick();
+				if (!run) world.tick(Gdx.graphics.getDeltaTime());
 			}
 		}));
 
@@ -93,9 +94,11 @@ public class Main extends ApplicationAdapter {
 	@Override
 	public void render () {
 
+		float deltaTime = Gdx.graphics.getDeltaTime();
+
 		inputs();
 
-		if (run) world.tick();
+		if (run) world.tick(deltaTime);
 
 		draw();
 
@@ -105,9 +108,12 @@ public class Main extends ApplicationAdapter {
 
 	private int spawn = 0;
 	private final int spawnRate = 1;
+	private final int spawnChance = 32;
 	private int spawnIndex = 0;
 	private String spawnType = Particle.TYPES.get(spawnIndex);
-	int brush = 8;
+	private int brush = 16;
+
+	private final Random random = new Random();
 
 	private void inputs() {
 
@@ -130,10 +136,11 @@ public class Main extends ApplicationAdapter {
 
 					for (int x = Math.max(gridPos.x-brush, 0); x < Math.min(gridPos.x+brush, World.width -1); x++) {
 						for (int y = Math.max(gridPos.y-brush, 0); y < Math.min(gridPos.y+brush, World.length -1); y++) {
-							world.setParticle(x, y, new Particle(spawnType));
+							if(random.nextInt(spawnChance) == 0) {
+								world.setParticle(x, y, new Particle(spawnType));
+							}
 						}
 					}
-
 				}
 				spawn = spawnRate;
 			}

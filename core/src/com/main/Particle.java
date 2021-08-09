@@ -1,5 +1,7 @@
 package com.main;
 
+import com.badlogic.gdx.math.Vector2;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -30,7 +32,8 @@ public class Particle {
     public boolean liquid;
     public int density;
     public boolean updated = false;
-    public int dir = 1;
+    public Vector2 velocity = new Vector2();
+    // TODO : Add position as Vector2 because simpler
 
     public Particle(String type) {
         this.type = type;
