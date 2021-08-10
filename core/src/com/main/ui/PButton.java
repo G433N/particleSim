@@ -10,18 +10,13 @@ import com.main.World;
 
 public class PButton extends TextButton {// Particle button temp name
 
-    private static BitmapFont font;
-    private static TextButton.TextButtonStyle textButtonStyle;
+    private static final TextButton.TextButtonStyle textButtonStyle;
 
 
     static {
-        font = new BitmapFont();
-        font.setColor(Color.BLACK);
-        font.getData().setScale(1.0f);
-
         textButtonStyle = new TextButton.TextButtonStyle();
-        textButtonStyle.font = font;
-        textButtonStyle.fontColor = Color.RED;
+        textButtonStyle.font = PLabel.font;
+        textButtonStyle.fontColor = PLabel.color;
     }
 
     public PButton(String text, GridPoint2 position, ChangeListener changeListener) {

@@ -32,7 +32,6 @@ public class Main extends ApplicationAdapter {
 	private SpriteBatch batch;
 	private ShapeRenderer shapeRenderer;
 
-	private HashMap<String, Texture> textureHashMap;
 	private Stage stage;
 
 	private World world;
@@ -46,20 +45,11 @@ public class Main extends ApplicationAdapter {
 	public void create () {
 		batch = new SpriteBatch();
 		shapeRenderer = new ShapeRenderer();
-		textureHashMap = new HashMap<>();
 		stage = new Stage(new ScreenViewport(), batch);
 
 		UI();
 
-		ImageLoading();
-
 		world = new World();
-	}
-
-	private void ImageLoading() {
-		textureHashMap.put("air", new Texture("particle/air.png"));
-		textureHashMap.put("sand", new Texture("particle/sand.png"));
-		textureHashMap.put("water", new Texture("particle/water.png"));
 	}
 
 	private PLabel spawnIndexLabel;
@@ -161,7 +151,7 @@ public class Main extends ApplicationAdapter {
 
 	private void draw() {
 
-		ScreenUtils.clear(1, 1, 1, 1);
+		ScreenUtils.clear(0, 1, 1, .5f);
 
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
@@ -174,7 +164,7 @@ public class Main extends ApplicationAdapter {
 		}
 		shapeRenderer.end();
 
-		stage.act();
+
 		stage.draw();
 	}
 
@@ -182,9 +172,5 @@ public class Main extends ApplicationAdapter {
 	public void dispose () {
 		batch.dispose();
 		stage.dispose();
-
-		for (Map.Entry<String, Texture> t : textureHashMap.entrySet()) {
-			t.getValue().dispose();
-		}
 	}
 }

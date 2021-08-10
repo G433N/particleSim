@@ -89,6 +89,8 @@ public class World {
                         if (particle.depth < 2) particle.color = "shallowwater";
                         else if (particle.depth < 20) particle.color = "water";
                         else particle.color = "deepwater";
+                        updateParticle(position, deltaTime);
+                        break;
 
 
                     default:

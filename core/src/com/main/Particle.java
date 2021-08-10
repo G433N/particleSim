@@ -1,12 +1,12 @@
 package com.main;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Vector2;
 import com.main.math.Float2;
 import com.main.math.Int2;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 public class Particle {
 
@@ -32,8 +32,10 @@ public class Particle {
         }
 
         COLOR = new HashMap<>();
-        COLOR.put("air"         ,   new Color());
-        COLOR.put("sand"        ,   new Color(194/255f, 178/255f, 128/255f, 1));
+        COLOR.put("air"         ,   new Color(0, 191/255f, 1, 1));
+        COLOR.put("sand1"        ,   new Color(194/255f, 178/255f, .5f, 1));
+        COLOR.put("sand2"        ,   new Color(194/255f, 173/255f, .5f, 1));
+        COLOR.put("sand3"        ,   new Color(194/255f, 184/255f, .5f, 1));
         COLOR.put("shallowwater",   new Color(0, 0, 1, 1));
         COLOR.put("water"       ,   new Color(0, 0, 200/255f, 1));
         COLOR.put("deepwater"   ,   new Color(0, 0, 128/255f, 1));
@@ -62,7 +64,11 @@ public class Particle {
 
         this.density = data.density;
         this.liquid = data.liquid;
-        this.color = data.color;
+        if (type.equals("sand")) {
+            java.util.Random random = new Random();
+            int n = random.nextInt(3) + 1;
+            this.color = "sand" + n;
+        } else this.color = data.color;
     }
 
     private Particle(int density, boolean liquid, String color) {

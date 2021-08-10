@@ -9,17 +9,17 @@ import com.main.World;
 
 public class PLabel extends Label{
 
-    private static BitmapFont font;
-    private static Label.LabelStyle labelStyle;
+    public static final BitmapFont font;
+    public static final Color color = Color.BLUE;
+    private static final Label.LabelStyle labelStyle;
 
     static {
         font = new BitmapFont();
-        font.setColor(Color.BLACK);
         font.getData().setScale(1.0f);
 
         labelStyle = new  Label.LabelStyle();
         labelStyle.font = font;
-        labelStyle.fontColor = Color.RED;
+        labelStyle.fontColor = color;
     }
 
     public PLabel(String text, GridPoint2 position) {
