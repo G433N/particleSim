@@ -2,6 +2,7 @@ package com.main;
 
 import com.badlogic.gdx.math.Vector2;
 import com.main.math.Float2;
+import com.main.math.Int2;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,7 +34,12 @@ public class Particle {
     public boolean liquid;
     public int density;
     public boolean updated = false;
+
+    public Int2 position = new Int2();
     public Float2 velocity = new Float2();
+
+    public boolean[] collision = new boolean[]{false, false, false, false};
+
     // TODO : Add position as Int2 because simpler
 
     public Particle(String type) {

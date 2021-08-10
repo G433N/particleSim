@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.main.math.Float2;
 import com.main.math.Int2;
 
+import java.awt.*;
 import java.util.Random;
 
 import static java.lang.Math.round;
@@ -31,6 +32,7 @@ public class World {
             for (int y = 0; y < length; y++) {
 
                 this.setParticle(x, y, new Particle("air"));
+                this.getParticle(x, y).position.set(x, y);
             }
         }
     }
@@ -49,6 +51,7 @@ public class World {
     public void setParticle(int x, int y, Particle p) {
 
         this.grid[x][y] = p;
+        p.position.set(x, y);
 
     }
 
@@ -57,7 +60,9 @@ public class World {
         // Reset all particles
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < length; y++) {
-                this.getParticle(x, y).updated = false;
+
+                Int2 position = new Int2(x, y);
+                this.getParticle(position).updated = false;
             }
         }
 
@@ -72,8 +77,15 @@ public class World {
 
                     case "sand":
                     case "water":
-                        updateParticle(x, y, deltaTime);
+
+                        Int2 position = new Int2(x, y);
+
+                        updateParticle(position, deltaTime);
+
+                        //collisionDetection(position);
+
                         break;
+
                     default:
                         break;
                 }
@@ -83,9 +95,11 @@ public class World {
         }
     }
 
-    public void updateParticle(int x, int y, float deltaTime) { // TODO : Make switch
+    int k = 0;
 
-        Particle particle = this.getParticle(x, y);
+    public void updateParticle(Int2 position, float deltaTime) { // TODO : Make switch
+
+        Particle particle = this.getParticle(position);
         final int density = particle.density;
 
         java.util.Random random = new Random();
@@ -93,32 +107,64 @@ public class World {
 
         if (dir == 0) dir = -1;
 
-        if ( this.getParticle(x, y - 1).density < density) {
+        if ( this.getParticle(position.x, position.y - 1).density < density) {
 
             particle.velocity.y += gravity * deltaTime;
 
-            applyVelocity(new Int2(x, y), particle.velocity);
+            applyVelocity(position, particle.velocity);
             return;
         }
         else particle.velocity.y = 0;
 
-        if ( this.getParticle(x + dir, y - 1).density < density ) {
-            movePosition(x, y, dir, - 1);
+        if ( this.getParticle(position.x + dir, position.y - 1).density < density ) {
+            movePosition(position.x, position.y, dir, - 1);
             return;
         }
 
         if (!particle.liquid) return;
 
-        if ( this.getParticle(x + dir, y).density < density) {
-            movePosition(x, y, dir, 0);
+
+        if ( this.getParticle(position.x + dir, position.y).density < density) {
+            movePosition(position.x, position.y, dir, 0);
         }
+
     }
 
     private void movePosition(int x, int y, int dx, int dy) { // Position, deltaPosition
 
-        Particle temp = this.getParticle(x + dx, y + dy);
-        this.setParticle(x + dx, y + dy, this.getParticle(x, y));
+        dx += x;
+        dy += y;
+
+        Particle temp = this.getParticle(dx, dy);
+        this.setParticle(dx, dy, this.getParticle(x, y));
         this.setParticle(x, y, temp);
+    }
+
+
+    private void collisionDetection(Int2 position) {
+
+        Particle particle = this.getParticle(position);
+
+        if (particle.density < this.getParticle(position.offset(0, 1)).density) {
+            particle.collision[0] = true;
+            if (0 < particle.velocity.y) particle.velocity.y = 0;
+        }
+        else particle.collision[0] = false;
+        if (particle.density < this.getParticle(position.offset(1, 0)).density) {
+            particle.collision[1] = true;
+            if (0 < particle.velocity.x) particle.velocity.x = 0;
+        }
+        else particle.collision[1] = false;
+        if (particle.density < this.getParticle(position.offset(0, -1)).density) {
+            particle.collision[2] = true;
+            if (particle.velocity.y < 0) particle.velocity.y = 0;
+        }
+        else particle.collision[2] = false;
+        if (particle.density < this.getParticle(position.offset(-1, 0)).density) {
+            particle.collision[3] = true;
+            if (particle.velocity.x < 0) particle.velocity.x = 0;
+        }
+        else particle.collision[3] = false;
     }
 
     private void applyVelocity(Int2 position, Float2 velocity) {

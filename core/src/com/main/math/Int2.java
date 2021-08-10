@@ -15,4 +15,8 @@ public class Int2 extends GridPoint2 {
     public Float2 toFloat2() {
         return new Float2( (float) this.x, (float) this.y);
     }
+
+    public Int2 offset(int x, int y) {
+        return new Int2(this.x + x, this.y + y);
+    }
 }
