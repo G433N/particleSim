@@ -18,7 +18,7 @@ import com.main.ui.PLabel;
 
 import java.util.Random;
 
-import static java.lang.Math.floor;
+import static java.lang.Math.*;
 
 
 // TODO : Better GUI
@@ -52,7 +52,9 @@ public class Main extends ApplicationAdapter {
 	}
 
 	private PLabel spawnIndexLabel;
-	private PCheckButton pauseButton;
+	private PLabel brushRadiusLabel;
+	private PLabel brushChanceLabel;
+	private PLabel spawnRateLabel;
 
 	private void UI() {
 
@@ -64,13 +66,103 @@ public class Main extends ApplicationAdapter {
 		spawnIndexLabel = new PLabel("Particle: " + spawnType, new Int2(10, 10));
 		stage.addActor(spawnIndexLabel);
 
-		pauseButton = new PCheckButton("Simulate", new Int2(10, 30), new Int2(70, 20), new ChangeListener() {
+		brushRadiusLabel = new PLabel("" + brushRadius, new Int2(172, yMax - 30));
+		stage.addActor(brushRadiusLabel);
+
+		brushChanceLabel = new PLabel("" + (spawnChance), new Int2(172, yMax - 50));
+		stage.addActor(brushChanceLabel);
+
+		spawnRateLabel = new PLabel("" + (spawnRate), new Int2(172, yMax - 70));
+		stage.addActor(spawnRateLabel);
+
+		stage.addActor(new PLabel("%", new Int2(216, yMax - 50)));
+		stage.addActor(new PLabel("Spawn rate:", new Int2(70, yMax - 70)));
+		stage.addActor(new PLabel("every n frame", new Int2(216, yMax - 70)));
+
+		// Simulate button
+		stage.addActor(new PCheckButton("Simulate", new Int2(10, 30), new Int2(70, 20), new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				simulate = !simulate;
 			}
-		});
-		stage.addActor(pauseButton);
+		}));
+
+		stage.addActor(new PButton("Reset", new Int2(10, 70), new Int2(50, 20), new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				world = new World();
+			}
+		}));
+
+
+
+		// Brush button
+		stage.addActor(new PCheckButton("Brush", new Int2(56, yMax - 30), new Int2(80, 20), new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				brush = !brush;
+			}
+		}));
+		// Brush radius minus
+		stage.addActor(new PButton("-", new Int2(150, yMax - 30), new Int2(20, 20), new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				brushRadius = max(1, brushRadius - 1);
+				brushRadiusLabel.setText(brushRadius);
+			}
+		}));
+		// Brush radius plus
+		stage.addActor(new PButton("+", new Int2(196, yMax - 30), new Int2(20, 20), new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+						brushRadius = min(101, brushRadius + 1);
+				brushRadiusLabel.setText(brushRadius);
+			}
+		}));
+
+
+
+		// Random brush button
+		stage.addActor(new PCheckButton("Random", new Int2(63, yMax - 50), new Int2(80, 20), new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				brushRandom = !brushRandom;
+			}
+		}));
+		// Random chance minus
+		stage.addActor(new PButton("-", new Int2(150, yMax - 50), new Int2(20, 20), new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				spawnChance = max(1, spawnChance - 1);
+				brushChanceLabel.setText(spawnChance);
+			}
+		}));
+		// Random chance plus
+		stage.addActor(new PButton("+", new Int2(196, yMax - 50), new Int2(20, 20), new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				spawnChance = min(100, spawnChance + 1);
+				brushChanceLabel.setText(spawnChance);
+			}
+		}));
+
+
+		// Spawn rate minus
+		stage.addActor(new PButton("-", new Int2(150, yMax - 70), new Int2(20, 20), new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				spawnChance = max(1, spawnChance - 1);
+				brushChanceLabel.setText(spawnChance);
+			}
+		}));
+		// Spawn rate plus
+		stage.addActor(new PButton("+", new Int2(196, yMax - 70), new Int2(20, 20), new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				spawnRate = min(10, spawnRate + 1);
+				spawnRateLabel.setText(spawnRate);
+			}
+		}));
 
 
 		for (int i = 0; i < Particle.TYPES.size(); i++) { // Adds all particle types buttons
@@ -105,18 +197,21 @@ public class Main extends ApplicationAdapter {
 	// Input handling
 
 	private int spawn = 0;
-	private final int spawnRate = 1;
-	private final int spawnChance = 64;
+	private int spawnRate = 1;
+	private int spawnChance = 5;
 	private int spawnIndex = 0;
 	private String spawnType = Particle.TYPES.get(spawnIndex);
-	private int brush = 16;
+	private int brushRadius = 5;
+
+	private boolean brush = false;
+	private boolean brushRandom = false;
 
 
 
 	private final Random random = new Random();
 
 	private void inputs() {
-
+		final boolean inputMouseLeft = Gdx.input.isButtonPressed(Input.Keys.LEFT);
 
 		// get mousePos and mousePos -> gridPos
 		mousePos.set(Gdx.input.getX(), World.length * pixelSize - Gdx.input.getY());
@@ -126,21 +221,27 @@ public class Main extends ApplicationAdapter {
 		);
 
 
-		// spawn particles
-
-		if ( Gdx.input.isButtonPressed(Input.Buttons.LEFT) ) {
+		if (inputMouseLeft) {
 			if (spawn == 0) {
 				if (0 <= gridPos.x && gridPos.x < World.width && 0 <= gridPos.y && gridPos.y < World.length) { // FIXME : MAKE TO METHOD
 
-					for (int x = Math.max(gridPos.x-brush, 0); x < Math.min(gridPos.x+brush, World.width -1); x++) {
-						for (int y = Math.max(gridPos.y-brush, 0); y < Math.min(gridPos.y+brush, World.length -1); y++) {
+					if (brush) {
+						for (int x = Math.max(gridPos.x- brushRadius, 0); x < min(gridPos.x+ brushRadius, World.width); x++) {
+							for (int y = Math.max(gridPos.y- brushRadius, 0); y < min(gridPos.y+ brushRadius, World.length); y++) {
 
-							if(random.nextInt(spawnChance) == 0) {
-								world.setParticle(x, y, new Particle(spawnType));
+								if (!brushRandom) {
+									world.setParticle(x, y, new Particle(spawnType));
+								} else if(random.nextInt(100) < spawnChance) {
+									world.setParticle(x, y, new Particle(spawnType));
+								}
+
 							}
-
 						}
 					}
+					else {
+						world.setParticle(gridPos, new Particle(spawnType));
+					}
+
 				} spawn = spawnRate;
 			} else spawn--;
 		} else spawn = 0;

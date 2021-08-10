@@ -10,7 +10,7 @@ public class DesktopLauncher {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 
 		config.title = "particle";
-		config.width = (World.width) * Main.pixelSize + 250;
+		config.width = (World.width) * Main.pixelSize + 310;
 		config.height = (World.length) * Main.pixelSize;
 		config.resizable = false; // Because particle spawning wont work otherwise
 

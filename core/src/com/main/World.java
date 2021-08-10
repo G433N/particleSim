@@ -54,6 +54,12 @@ public class World {
 
     }
 
+    public void setParticle(Int2 pos, Particle p) {
+
+        setParticle(pos.x, pos.y, p);
+
+    }
+
     public void tick(float deltaTime) {
 
         // Reset all particles
@@ -76,14 +82,18 @@ public class World {
 
                     case "air":
                     case "null":
+                    case "iron":
                         break;
 
                     case "water":
 
-                        if (!this.getParticle(position.offset(0, 1)).type.equals("water")) {
+                        if (this.getParticle(position.offset(0, 1)).type.equals("air")) {
                             particle.depth = 0;
-                        } else {
+                        }
+                        else if (this.getParticle(position.offset(0, 1)).type.equals("water")) {
                             particle.depth = this.getParticle(position.offset(0, 1)).depth + 1;
+                        } else {
+                            particle.depth = 20;
                         }
 
                         if (particle.depth < 2) particle.color = "shallowwater";

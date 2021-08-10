@@ -17,10 +17,11 @@ public class Particle {
     static {
 
         DATA = new HashMap<>();
-        DATA.put("air"     ,   new Particle("air"   , 0 ,false  , "air"));
+        DATA.put("air"     ,   new Particle("air"   ,0  ,false  , "air"));
         DATA.put("null"    ,   new Particle("null"  ,999,false  , "air"));
         DATA.put("sand"    ,   new Particle("sand"  ,2  ,false  , "sand"));
         DATA.put("water"   ,   new Particle("water" ,1  ,true   , "water"));
+        DATA.put("iron"    ,   new Particle("iron"  ,999,false  , "iron"));
 
 
         TYPES = new ArrayList<>();
@@ -33,12 +34,13 @@ public class Particle {
 
         COLOR = new HashMap<>();
         COLOR.put("air"         ,   new Color(0, 191/255f, 1, 1));
-        COLOR.put("sand1"        ,   new Color(194/255f, 178/255f, .5f, 1));
-        COLOR.put("sand2"        ,   new Color(194/255f, 173/255f, .5f, 1));
-        COLOR.put("sand3"        ,   new Color(194/255f, 184/255f, .5f, 1));
+        COLOR.put("sand1"       ,   new Color(194/255f, 178/255f, .5f, 1));
+        COLOR.put("sand2"       ,   new Color(194/255f, 173/255f, .5f, 1));
+        COLOR.put("sand3"       ,   new Color(194/255f, 184/255f, .5f, 1));
         COLOR.put("shallowwater",   new Color(0, 0, 1, 1));
         COLOR.put("water"       ,   new Color(0, 0, 200/255f, 1));
         COLOR.put("deepwater"   ,   new Color(0, 0, 128/255f, 1));
+        COLOR.put("iron"        ,   new Color(140/255f, 146/255f, 172/255f, 1));
     }
 
     // Used by all
