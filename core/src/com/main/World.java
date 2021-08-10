@@ -59,33 +59,45 @@ public class World {
         // Reset all particles
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < length; y++) {
-
-                Int2 position = new Int2(x, y);
-                this.getParticle(position).updated = false;
+                this.getParticle(x, y).updated = false;
             }
         }
 
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < length; y++) {
 
-                Particle particle = this.getParticle(x, y);
+                Int2 position = new Int2(x, y);
+
+                Particle particle = this.getParticle(position);
 
                 if (particle.updated) continue; // Skip updated particles
 
                 switch (particle.type) {
 
-                    case "sand":
+                    case "air":
+                    case "null":
+                        break;
+
                     case "water":
 
-                        Int2 position = new Int2(x, y);
+                        if (!this.getParticle(position.offset(0, 1)).type.equals("water")) {
+                            particle.depth = 0;
+                        } else {
+                            particle.depth = this.getParticle(position.offset(0, 1)).depth + 1;
+                        }
+
+                        if (particle.depth < 2) particle.color = "shallowwater";
+                        else if (particle.depth < 20) particle.color = "water";
+                        else particle.color = "deepwater";
+
+
+                    default:
+
 
                         updateParticle(position, deltaTime);
 
                         //collisionDetection(position);
 
-                        break;
-
-                    default:
                         break;
                 }
 

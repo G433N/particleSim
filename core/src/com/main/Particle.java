@@ -32,24 +32,28 @@ public class Particle {
         }
 
         COLOR = new HashMap<>();
-        COLOR.put("air"     ,   new Color());
-        COLOR.put("null"    ,   new Color());
-        COLOR.put("sand"    ,   new Color(194/255f, 178/255f, 128/255f, 1));
-        COLOR.put("water"   ,   new Color(0, 0f, 200/255f, 1));
+        COLOR.put("air"         ,   new Color());
+        COLOR.put("sand"        ,   new Color(194/255f, 178/255f, 128/255f, 1));
+        COLOR.put("shallowwater",   new Color(0, 0, 1, 1));
+        COLOR.put("water"       ,   new Color(0, 0, 200/255f, 1));
+        COLOR.put("deepwater"   ,   new Color(0, 0, 128/255f, 1));
     }
 
+    // Used by all
     public final String type;
     public boolean liquid; // TODO : Gas, liquid and fast form
     public int density;
     public boolean updated = false;
     public String color;
 
+    // Physics
     public Int2 position = new Int2();
     public Float2 velocity = new Float2();
-
     public boolean[] collision = new boolean[]{false, false, false, false}; // Fixme
 
-    // TODO : Add position as Int2 because simpler
+    // particle specific // TODO : find better way to do this
+
+    public int depth = 0;
 
     public Particle(String type) {
         this.type = type;
