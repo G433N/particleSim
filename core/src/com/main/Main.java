@@ -3,12 +3,8 @@ package com.main;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.GridPoint2;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -17,14 +13,17 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.main.math.Float2;
 import com.main.math.Int2;
 import com.main.ui.PButton;
+import com.main.ui.PCheckButton;
 import com.main.ui.PLabel;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 import static java.lang.Math.floor;
 
+
+// TODO : Better GUI
+// TODO : Particle targeting
+// TODO :
 public class Main extends ApplicationAdapter {
 
 	public static final int pixelSize = 4;
@@ -39,7 +38,7 @@ public class Main extends ApplicationAdapter {
 	private final Float2 mousePos = new Float2();
 	private final Int2 gridPos = new Int2();
 
-	private boolean run = true;
+	private boolean simulate = false;
 
 	@Override
 	public void create () {
@@ -53,44 +52,42 @@ public class Main extends ApplicationAdapter {
 	}
 
 	private PLabel spawnIndexLabel;
+	private PCheckButton pauseButton;
 
 	private void UI() {
 
 		Gdx.input.setInputProcessor(stage);
 
-		spawnIndexLabel = new PLabel("Particle: " + spawnType, new GridPoint2(50, 50));
+		int xMax = Gdx.graphics.getWidth();
+		int yMax = Gdx.graphics.getHeight();
 
+		spawnIndexLabel = new PLabel("Particle: " + spawnType, new Int2(10, 10));
 		stage.addActor(spawnIndexLabel);
 
-		stage.addActor(new PButton("Pause", new GridPoint2(50, 90), new ChangeListener() {
+		pauseButton = new PCheckButton("Simulate", new Int2(10, 30), new Int2(70, 20), new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				run = !run;
+				simulate = !simulate;
 			}
-		}));
-
-		stage.addActor(new PButton("Tick", new GridPoint2(50, 70), new ChangeListener() {
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				if (!run) world.tick(Gdx.graphics.getDeltaTime());
-			}
-		}));
-
-		stage.addActor(new PButton("#", new GridPoint2(40, 50), new ChangeListener() {
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				spawnIndex++;
-
-				if (spawnIndex >= Particle.TYPES.size()) spawnIndex = 0;
-
-				spawnType = Particle.TYPES.get(spawnIndex);
-
-				spawnIndexLabel.setText("Particle: " + spawnType);
-			}
-		}));
+		});
+		stage.addActor(pauseButton);
 
 
+		for (int i = 0; i < Particle.TYPES.size(); i++) { // Adds all particle types buttons
+
+			final Particle particle = Particle.DATA.get(Particle.TYPES.get(i));
+
+			stage.addActor(new PButton(particle.type, new Int2(10, yMax - 30 - 30 * i), new Int2(50, 20), new ChangeListener() {
+				@Override
+				public void changed(ChangeEvent event, Actor actor) {
+					spawnType = particle.type;
+					spawnIndexLabel.setText("Particle: " + spawnType);
+				}
+			}));
+
+		}
 	}
+
 
 	@Override
 	public void render () {
@@ -99,7 +96,7 @@ public class Main extends ApplicationAdapter {
 
 		inputs();
 
-		if (run) world.tick(deltaTime);
+		if (simulate) world.tick(deltaTime);
 
 		draw();
 
@@ -133,7 +130,7 @@ public class Main extends ApplicationAdapter {
 
 		if ( Gdx.input.isButtonPressed(Input.Buttons.LEFT) ) {
 			if (spawn == 0) {
-				if (0 <= gridPos.x && gridPos.x < World.width && 0 <= gridPos.y && gridPos.y < World.length) { // TODO : MAKE TO METHOD
+				if (0 <= gridPos.x && gridPos.x < World.width && 0 <= gridPos.y && gridPos.y < World.length) { // FIXME : MAKE TO METHOD
 
 					for (int x = Math.max(gridPos.x-brush, 0); x < Math.min(gridPos.x+brush, World.width -1); x++) {
 						for (int y = Math.max(gridPos.y-brush, 0); y < Math.min(gridPos.y+brush, World.length -1); y++) {
@@ -164,7 +161,7 @@ public class Main extends ApplicationAdapter {
 		}
 		shapeRenderer.end();
 
-
+		stage.act();
 		stage.draw();
 	}
 

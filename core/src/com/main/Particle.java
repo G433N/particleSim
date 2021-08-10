@@ -17,10 +17,10 @@ public class Particle {
     static {
 
         DATA = new HashMap<>();
-        DATA.put("air"     ,   new Particle(0,  false   , "air"));
-        DATA.put("null"    ,   new Particle(999,false   , "air"));
-        DATA.put("sand"    ,   new Particle(2,  false   , "sand"));
-        DATA.put("water"   ,   new Particle(1,  true    , "water"));
+        DATA.put("air"     ,   new Particle("air"   , 0 ,false  , "air"));
+        DATA.put("null"    ,   new Particle("null"  ,999,false  , "air"));
+        DATA.put("sand"    ,   new Particle("sand"  ,2  ,false  , "sand"));
+        DATA.put("water"   ,   new Particle("water" ,1  ,true   , "water"));
 
 
         TYPES = new ArrayList<>();
@@ -64,6 +64,7 @@ public class Particle {
 
         this.density = data.density;
         this.liquid = data.liquid;
+
         if (type.equals("sand")) {
             java.util.Random random = new Random();
             int n = random.nextInt(3) + 1;
@@ -71,9 +72,9 @@ public class Particle {
         } else this.color = data.color;
     }
 
-    private Particle(int density, boolean liquid, String color) {
+    private Particle(String type, int density, boolean liquid, String color) {
         // for data storage
-        this.type = "null";
+        this.type = type; // For GUI
         this.density = density;
         this.liquid = liquid;
         this.color = color;

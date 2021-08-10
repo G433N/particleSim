@@ -1,29 +1,24 @@
 package com.main.ui;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.main.Main;
 import com.main.World;
+import com.main.math.Int2;
 
 public class PLabel extends Label{
 
-    public static final BitmapFont font;
-    public static final Color color = Color.BLUE;
-    private static final Label.LabelStyle labelStyle;
+    public static final Skin skin;
 
     static {
-        font = new BitmapFont();
-        font.getData().setScale(1.0f);
-
-        labelStyle = new  Label.LabelStyle();
-        labelStyle.font = font;
-        labelStyle.fontColor = color;
+        skin = new Skin(Gdx.files.internal("ui/metalui/metal-ui.json")); // Credit :  https://ray3k.wordpress.com/metal-ui-skin-for-libgdx/
     }
 
-    public PLabel(String text, GridPoint2 position) {
-        super(text, labelStyle);
+    public PLabel(String text, Int2 position) {
+        super(text, skin);
         setPosition( World.width * Main.pixelSize + position.x, position.y );
     }
 }
