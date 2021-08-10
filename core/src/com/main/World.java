@@ -32,7 +32,6 @@ public class World {
             for (int y = 0; y < length; y++) {
 
                 this.setParticle(x, y, new Particle("air"));
-                this.getParticle(x, y).position.set(x, y);
             }
         }
     }

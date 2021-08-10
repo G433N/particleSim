@@ -3,14 +3,17 @@ package com.main;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.main.math.Float2;
 import com.main.math.Int2;
 import com.main.ui.PButton;
@@ -27,6 +30,8 @@ public class Main extends ApplicationAdapter {
 	public static final int pixelSize = 4;
 
 	private SpriteBatch batch;
+	private ShapeRenderer shapeRenderer;
+
 	private HashMap<String, Texture> textureHashMap;
 	private Stage stage;
 
@@ -40,7 +45,9 @@ public class Main extends ApplicationAdapter {
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
+		shapeRenderer = new ShapeRenderer();
 		textureHashMap = new HashMap<>();
+		stage = new Stage(new ScreenViewport(), batch);
 
 		UI();
 
@@ -58,7 +65,7 @@ public class Main extends ApplicationAdapter {
 	private PLabel spawnIndexLabel;
 
 	private void UI() {
-		stage = new Stage();
+
 		Gdx.input.setInputProcessor(stage);
 
 		spawnIndexLabel = new PLabel("Particle: " + spawnType, new GridPoint2(50, 50));
@@ -112,10 +119,12 @@ public class Main extends ApplicationAdapter {
 
 	private int spawn = 0;
 	private final int spawnRate = 1;
-	private final int spawnChance = 32;
+	private final int spawnChance = 64;
 	private int spawnIndex = 0;
 	private String spawnType = Particle.TYPES.get(spawnIndex);
 	private int brush = 16;
+
+
 
 	private final Random random = new Random();
 
@@ -125,8 +134,8 @@ public class Main extends ApplicationAdapter {
 		// get mousePos and mousePos -> gridPos
 		mousePos.set(Gdx.input.getX(), World.length * pixelSize - Gdx.input.getY());
 		gridPos.set(
-				(int) floor(mousePos.x/pixelSize),
-				(int) floor(mousePos.y/pixelSize)
+				(int) floor(mousePos.x / pixelSize),
+				(int) floor(mousePos.y / pixelSize)
 		);
 
 
@@ -154,18 +163,16 @@ public class Main extends ApplicationAdapter {
 
 		ScreenUtils.clear(1, 1, 1, 1);
 
-		stage.getBatch().begin();
+		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
 		for (int x = 0; x < World.width; x++) {
 			for (int y = 0; y < World.length; y++) {
-
-				String type = world.getParticle(x, y).type;
-
-				stage.getBatch().draw(textureHashMap.get(type), x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+				String color = world.getParticle(x, y).color;
+				shapeRenderer.setColor(Particle.COLOR.get(color));
+				shapeRenderer.rect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
 			}
 		}
-
-		stage.getBatch().end();
+		shapeRenderer.end();
 
 		stage.act();
 		stage.draw();

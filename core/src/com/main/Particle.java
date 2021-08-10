@@ -1,5 +1,6 @@
 package com.main;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.main.math.Float2;
 import com.main.math.Int2;
@@ -9,16 +10,17 @@ import java.util.HashMap;
 
 public class Particle {
 
-    public static HashMap<String, Particle> DATA;
-    public static ArrayList<String> TYPES;
+    public final static HashMap<String, Particle> DATA;
+    public final static ArrayList<String> TYPES;
+    public final static HashMap<String, Color> COLOR;
 
     static {
 
         DATA = new HashMap<>();
-        DATA.put("air"     ,   new Particle(0,  false   ));
-        DATA.put("null"    ,   new Particle(999,false   ));
-        DATA.put("sand"    ,   new Particle(2,  false   ));
-        DATA.put("water"   ,   new Particle(1,  true    ));
+        DATA.put("air"     ,   new Particle(0,  false   , "air"));
+        DATA.put("null"    ,   new Particle(999,false   , "air"));
+        DATA.put("sand"    ,   new Particle(2,  false   , "sand"));
+        DATA.put("water"   ,   new Particle(1,  true    , "water"));
 
 
         TYPES = new ArrayList<>();
@@ -28,17 +30,24 @@ public class Particle {
                 TYPES.add(type);
             }
         }
+
+        COLOR = new HashMap<>();
+        COLOR.put("air"     ,   new Color());
+        COLOR.put("null"    ,   new Color());
+        COLOR.put("sand"    ,   new Color(194/255f, 178/255f, 128/255f, 1));
+        COLOR.put("water"   ,   new Color(0, 0f, 200/255f, 1));
     }
 
     public final String type;
-    public boolean liquid;
+    public boolean liquid; // TODO : Gas, liquid and fast form
     public int density;
     public boolean updated = false;
+    public String color;
 
     public Int2 position = new Int2();
     public Float2 velocity = new Float2();
 
-    public boolean[] collision = new boolean[]{false, false, false, false};
+    public boolean[] collision = new boolean[]{false, false, false, false}; // Fixme
 
     // TODO : Add position as Int2 because simpler
 
@@ -49,12 +58,15 @@ public class Particle {
 
         this.density = data.density;
         this.liquid = data.liquid;
+        this.color = data.color;
     }
 
-    private Particle(int density, boolean liquid) { // for data storage
+    private Particle(int density, boolean liquid, String color) {
+        // for data storage
         this.type = "null";
         this.density = density;
         this.liquid = liquid;
+        this.color = color;
     }
 
     /*
