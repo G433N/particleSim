@@ -41,6 +41,7 @@ public class Particle {
         COLOR.put("water"       ,   new Color(0, 0, 200/255f, 1));
         COLOR.put("deepwater"   ,   new Color(0, 0, 128/255f, 1));
         COLOR.put("iron"        ,   new Color(140/255f, 146/255f, 172/255f, 1));
+        COLOR.put("red"         ,   Color.RED);
     }
 
     // Used by all

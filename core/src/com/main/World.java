@@ -31,7 +31,7 @@ public class World {
 
             for (int y = 0; y < length; y++) {
 
-                this.setParticle(x, y, new Particle("air"));
+                this.setParticle(x, y, new Particle("air"), true);
             }
         }
     }
@@ -48,11 +48,15 @@ public class World {
     }
 
     public void setParticle(int x, int y, Particle p) {
+        setParticle(x, y, p, false);
+    }
+    public void setParticle(int x, int y, Particle p, boolean firstTime) {
+
 
         this.grid[x][y] = p;
         p.position.set(x, y);
-
     }
+
 
     public void setParticle(Int2 pos, Particle p) {
 
@@ -210,6 +214,10 @@ public class World {
         for (int t = 0; t < roundDistance; t++) {
 
             target.add(normal);
+
+            if(position.x == round(target.x) && position.y == round(target.y)) {
+                continue;
+            }
 
             if (this.getParticle(round(target.x), round(target.y)).density < this.getParticle(position).density) {
 

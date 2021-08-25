@@ -21,9 +21,8 @@ import java.util.Random;
 import static java.lang.Math.*;
 
 
-// TODO : Better GUI
 // TODO : Particle targeting
-// TODO :
+// TODO : Fire and Wood
 public class Main extends ApplicationAdapter {
 
 	public static final int pixelSize = 4;
@@ -56,6 +55,8 @@ public class Main extends ApplicationAdapter {
 	private PLabel brushChanceLabel;
 	private PLabel spawnRateLabel;
 
+	private boolean trackNext = false;
+
 	private void UI() {
 
 		Gdx.input.setInputProcessor(stage);
@@ -87,13 +88,24 @@ public class Main extends ApplicationAdapter {
 			}
 		}));
 
-		stage.addActor(new PButton("Reset", new Int2(10, 70), new Int2(50, 20), new ChangeListener() {
+
+		// Reset button
+		stage.addActor(new PButton("Reset", new Int2(10, 50), new Int2(50, 20), new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				world = new World();
 			}
 		}));
 
+
+
+		// Track button
+		stage.addActor(new PButton("Track", new Int2(10, 80), new Int2(50, 20), new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				trackNext = true;
+			}
+		}));
 
 
 		// Brush button
@@ -222,8 +234,12 @@ public class Main extends ApplicationAdapter {
 
 
 		if (inputMouseLeft) {
-			if (spawn == 0) {
-				if (0 <= gridPos.x && gridPos.x < World.width && 0 <= gridPos.y && gridPos.y < World.length) { // FIXME : MAKE TO METHOD
+			if (trackNext && isInWorld(gridPos.x, gridPos.y)) {
+
+				trackNext = false;
+			}
+			else if (spawn == 0) {
+				if (isInWorld(gridPos.x, gridPos.y)) { // FIXME : MAKE TO METHOD
 
 					if (brush) {
 						for (int x = Math.max(gridPos.x- brushRadius, 0); x < min(gridPos.x+ brushRadius, World.width); x++) {
@@ -245,6 +261,10 @@ public class Main extends ApplicationAdapter {
 				} spawn = spawnRate;
 			} else spawn--;
 		} else spawn = 0;
+	}
+
+	private boolean isInWorld(int x, int y) {
+		return 0 <= x && x < World.width && 0 <= y && y < World.length;
 	}
 
 	private void draw() {
