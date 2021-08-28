@@ -12,11 +12,20 @@ public class Int2 extends GridPoint2 {
         super();
     }
 
+    public Int2(Int2 pos) {
+        super(pos.x, pos.y);
+    }
+
     public Float2 toFloat2() {
         return new Float2( (float) this.x, (float) this.y);
     }
 
     public Int2 offset(int x, int y) {
         return new Int2(this.x + x, this.y + y);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
     }
 }

@@ -14,16 +14,14 @@ public class World {
 
 
     // TODO : size get()
-    public static int width = 128;
-    public static int length = 128;
+    public static int width = 24;
+    public static int length = 24;
 
     private final int gravity = -10;
 
     public boolean simulate = false;
 
     Particle[][] grid;
-
-    Particle track; // TODO
 
 
     public World() {
@@ -36,7 +34,8 @@ public class World {
 
             for (int y = 0; y < length; y++) {
 
-                this.setParticle(x, y, new Particle("air"));
+                this.grid[x][y] = new Particle("air");
+                this.grid[x][y].position = new Int2(x, y);
             }
         }
     }
@@ -54,14 +53,13 @@ public class World {
     }
 
     public void setParticle(int x, int y, Particle p) {
-        this.grid[x][y] = p;
         p.position.set(x, y);
+        this.grid[x][y] = p;
     }
 
     public void setParticle(Int2 pos, Particle p) {
 
         setParticle(pos.x, pos.y, p);
-
     }
 
     // Update world
@@ -90,23 +88,6 @@ public class World {
                     case "air":
                     case "null":
                     case "iron":
-                        break;
-
-                    case "water":
-
-                        if (this.getParticle(position.offset(0, 1)).type.equals("air")) {
-                            particle.depth = 0;
-                        }
-                        else if (this.getParticle(position.offset(0, 1)).type.equals("water")) {
-                            particle.depth = this.getParticle(position.offset(0, 1)).depth + 1;
-                        } else {
-                            particle.depth = 20;
-                        }
-
-                        if (particle.depth < 2) particle.color = "shallowwater";
-                        else if (particle.depth < 20) particle.color = "water";
-                        else particle.color = "deepwater";
-                        updateParticle(position, deltaTime);
                         break;
 
 
@@ -258,8 +239,14 @@ public class World {
         }
     }
 
+    private boolean isInWorld(Int2 pos) {
+        return isInWorld(pos.x, pos.y);
+    }
+
     public boolean isInWorld(int x, int y) {
         return 0 <= x && x < World.width && 0 <= y && y < World.length;
     }
+
+
 
 }

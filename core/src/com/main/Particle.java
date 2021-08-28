@@ -4,9 +4,12 @@ import com.badlogic.gdx.graphics.Color;
 import com.main.math.Float2;
 import com.main.math.Int2;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Random;
+import java.util.List;
 
 public class Particle {
 
@@ -20,7 +23,7 @@ public class Particle {
         DATA.put("air"     ,   new Particle("air"   ,0  ,false  , "air"));
         DATA.put("null"    ,   new Particle("null"  ,999,false  , "air"));
         DATA.put("sand"    ,   new Particle("sand"  ,2  ,false  , "sand"));
-        DATA.put("water"   ,   new Particle("water" ,1  ,true   , "water"));
+        DATA.put("water"   ,   new Particle("water" ,1  ,true   , "shallowwater"));
         DATA.put("iron"    ,   new Particle("iron"  ,999,false  , "iron"));
 
 
@@ -34,7 +37,7 @@ public class Particle {
 
         COLOR = new HashMap<>();
         COLOR.put("air"         ,   new Color(0, 191/255f, 1, 1));
-        COLOR.put("sand1"       ,   new Color(194/255f, 178/255f, .5f, 1));
+        COLOR.put("sand"       ,   new Color(194/255f, 178/255f, .5f, 1));
         COLOR.put("sand2"       ,   new Color(194/255f, 173/255f, .5f, 1));
         COLOR.put("sand3"       ,   new Color(194/255f, 184/255f, .5f, 1));
         COLOR.put("shallowwater",   new Color(0, 0, 1, 1));
@@ -54,11 +57,9 @@ public class Particle {
     // Physics
     public Int2 position = new Int2();
     public Float2 velocity = new Float2();
-    public boolean[] collision = new boolean[]{false, false, false, false}; // Fixme
 
-    // particle specific // TODO : find better way to do this
+    // public boolean[] collision = new boolean[]{false, false, false, false}; // Fixme
 
-    public int depth = 0;
 
     public Particle(String type) {
         this.type = type;
@@ -68,11 +69,7 @@ public class Particle {
         this.density = data.density;
         this.liquid = data.liquid;
 
-        if (type.equals("sand")) {
-            java.util.Random random = new Random();
-            int n = random.nextInt(3) + 1;
-            this.color = "sand" + n;
-        } else this.color = data.color;
+        this.color = data.color;
     }
 
     private Particle(String type, int density, boolean liquid, String color) {
@@ -81,6 +78,27 @@ public class Particle {
         this.density = density;
         this.liquid = liquid;
         this.color = color;
+    }
+
+    public void printData() {
+
+        Field[] fields = this.getClass().getFields();
+
+        System.out.println(this);
+
+        for (Field field : fields) {
+
+            if(Modifier.isStatic(field.getModifiers())) continue;
+
+            try {
+                String name = field.getName();
+                Object value = field.get(this);
+                System.out.println(name + ": " + value.toString());
+
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /*

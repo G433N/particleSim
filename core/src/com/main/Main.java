@@ -16,8 +16,6 @@ import com.main.ui.PButton;
 import com.main.ui.PCheckButton;
 import com.main.ui.PLabel;
 
-import java.util.Random;
-
 import static java.lang.Math.*;
 
 
@@ -25,7 +23,7 @@ import static java.lang.Math.*;
 // TODO : Fire and Wood
 public class Main extends ApplicationAdapter {
 
-	public static final int pixelSize = 4;
+	public static final int pixelSize = 16;
 
 	private SpriteBatch batch;
 	private ShapeRenderer shapeRenderer;
@@ -36,6 +34,8 @@ public class Main extends ApplicationAdapter {
 
 	private final Float2 mousePos = new Float2();
 	private final Int2 gridPos = new Int2();
+	private boolean dataNext = false;
+	private boolean dataStop = false;
 
 	@Override
 	public void create () {
@@ -93,11 +93,11 @@ public class Main extends ApplicationAdapter {
 			}
 		}));
 
-		// Track button
-		stage.addActor(new PButton("Track", new Int2(10, 80), new Int2(50, 20), new ChangeListener() {
+		// Data button
+		stage.addActor(new PButton("Data", new Int2(10, 80), new Int2(50, 20), new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				System.out.println("WIP");
+				dataNext = true;
 			}
 		}));
 
@@ -204,14 +204,11 @@ public class Main extends ApplicationAdapter {
 	private int spawn = 0;
 	private int spawnRate = 1;
 	private int spawnChance = 5;
-	private int spawnIndex = 0;
-	private String spawnType = Particle.TYPES.get(spawnIndex);
+	private String spawnType = Particle.TYPES.get(0);
 	private int brushRadius = 5;
 
 	private boolean brush = false;
 	private boolean brushRandom = false;
-
-
 
 	private void inputs() {
 		final boolean inputMouseLeft = Gdx.input.isButtonPressed(Input.Keys.LEFT);
@@ -223,7 +220,16 @@ public class Main extends ApplicationAdapter {
 				(int) floor(mousePos.y / pixelSize)
 		);
 
-		if (inputMouseLeft) {
+		if(dataNext && dataStop) {
+			dataNext = false;
+			dataStop = false;
+		}
+		else if (dataNext && inputMouseLeft) {
+			this.world.getParticle(gridPos).printData();
+			System.out.println("---------------------------");
+			dataStop = true;
+		}
+		else if (inputMouseLeft) {
 			if (spawn >= spawnRate) {
 				world.spawn(gridPos, brushRadius, spawnType, brush, brushRandom, spawnChance);
 				spawn = 0;
