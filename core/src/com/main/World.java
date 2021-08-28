@@ -4,9 +4,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.main.math.Float2;
 import com.main.math.Int2;
 
-import java.awt.*;
 import java.util.Random;
 
+import static com.badlogic.gdx.math.MathUtils.random;
+import static java.lang.Math.min;
 import static java.lang.Math.round;
 
 public class World {
@@ -18,7 +19,11 @@ public class World {
 
     private final int gravity = -10;
 
+    public boolean simulate = false;
+
     Particle[][] grid;
+
+    Particle track; // TODO
 
 
     public World() {
@@ -31,11 +36,12 @@ public class World {
 
             for (int y = 0; y < length; y++) {
 
-                this.setParticle(x, y, new Particle("air"), true);
+                this.setParticle(x, y, new Particle("air"));
             }
         }
     }
 
+    // Setters and getters
     public Particle getParticle(int x, int y) {
         if (0 <= x && x < width && 0 <= y && y < length) {
             return this.grid[x][y];
@@ -44,19 +50,13 @@ public class World {
     }
 
     public Particle getParticle(Int2 position) {
-        return getParticle((int) position.x, (int) position.y);
+        return getParticle(position.x, position.y);
     }
 
     public void setParticle(int x, int y, Particle p) {
-        setParticle(x, y, p, false);
-    }
-    public void setParticle(int x, int y, Particle p, boolean firstTime) {
-
-
         this.grid[x][y] = p;
         p.position.set(x, y);
     }
-
 
     public void setParticle(Int2 pos, Particle p) {
 
@@ -64,7 +64,10 @@ public class World {
 
     }
 
+    // Update world
     public void tick(float deltaTime) {
+
+        if (!simulate) return;
 
         // Reset all particles
         for (int x = 0; x < width; x++) {
@@ -122,8 +125,7 @@ public class World {
         }
     }
 
-    int k = 0;
-
+    // Particle logic
     public void updateParticle(Int2 position, float deltaTime) { // TODO : Make switch
 
         Particle particle = this.getParticle(position);
@@ -167,33 +169,6 @@ public class World {
         this.setParticle(x, y, temp);
     }
 
-
-    private void collisionDetection(Int2 position) {
-
-        Particle particle = this.getParticle(position);
-
-        if (particle.density < this.getParticle(position.offset(0, 1)).density) {
-            particle.collision[0] = true;
-            if (0 < particle.velocity.y) particle.velocity.y = 0;
-        }
-        else particle.collision[0] = false;
-        if (particle.density < this.getParticle(position.offset(1, 0)).density) {
-            particle.collision[1] = true;
-            if (0 < particle.velocity.x) particle.velocity.x = 0;
-        }
-        else particle.collision[1] = false;
-        if (particle.density < this.getParticle(position.offset(0, -1)).density) {
-            particle.collision[2] = true;
-            if (particle.velocity.y < 0) particle.velocity.y = 0;
-        }
-        else particle.collision[2] = false;
-        if (particle.density < this.getParticle(position.offset(-1, 0)).density) {
-            particle.collision[3] = true;
-            if (particle.velocity.x < 0) particle.velocity.x = 0;
-        }
-        else particle.collision[3] = false;
-    }
-
     private void applyVelocity(Int2 position, Float2 velocity) {
 
         // .cpy() makes a copy of the vector
@@ -229,4 +204,62 @@ public class World {
             } else break;
         }
     }
+    /*
+    private void collisionDetection(Int2 position) {
+
+        Particle particle = this.getParticle(position);
+
+        if (particle.density < this.getParticle(position.offset(0, 1)).density) {
+            particle.collision[0] = true;
+            if (0 < particle.velocity.y) particle.velocity.y = 0;
+        }
+        else particle.collision[0] = false;
+        if (particle.density < this.getParticle(position.offset(1, 0)).density) {
+            particle.collision[1] = true;
+            if (0 < particle.velocity.x) particle.velocity.x = 0;
+        }
+        else particle.collision[1] = false;
+        if (particle.density < this.getParticle(position.offset(0, -1)).density) {
+            particle.collision[2] = true;
+            if (particle.velocity.y < 0) particle.velocity.y = 0;
+        }
+        else particle.collision[2] = false;
+        if (particle.density < this.getParticle(position.offset(-1, 0)).density) {
+            particle.collision[3] = true;
+            if (particle.velocity.x < 0) particle.velocity.x = 0;
+        }
+        else particle.collision[3] = false;
+    } // Broken AF
+    */
+
+    // Misc / To be named
+
+
+    public void spawn(Int2 pos, int radius, String type, boolean isBrush, boolean isRandom, int spawnChance) {
+
+        if (isInWorld(pos.x, pos.y)) { // FIXME : MAKE TO METHOD
+
+            if (isBrush) {
+                for (int x = Math.max(pos.x - radius, 0); x < min(pos.x + radius, World.width); x++) {
+                    for (int y = Math.max(pos.y - radius, 0); y < min(pos.y + radius, World.length); y++) {
+
+                        if (!isRandom) {
+                            this.setParticle(x, y, new Particle(type));
+                        } else if(random.nextInt(100) < spawnChance) {
+                            this.setParticle(x, y, new Particle(type));
+                        }
+
+                    }
+                }
+            }
+            else {
+                this.setParticle(pos, new Particle(type));
+            }
+        }
+    }
+
+    public boolean isInWorld(int x, int y) {
+        return 0 <= x && x < World.width && 0 <= y && y < World.length;
+    }
+
 }

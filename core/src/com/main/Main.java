@@ -37,8 +37,6 @@ public class Main extends ApplicationAdapter {
 	private final Float2 mousePos = new Float2();
 	private final Int2 gridPos = new Int2();
 
-	private boolean simulate = false;
-
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
@@ -55,7 +53,6 @@ public class Main extends ApplicationAdapter {
 	private PLabel brushChanceLabel;
 	private PLabel spawnRateLabel;
 
-	private boolean trackNext = false;
 
 	private void UI() {
 
@@ -84,10 +81,9 @@ public class Main extends ApplicationAdapter {
 		stage.addActor(new PCheckButton("Simulate", new Int2(10, 30), new Int2(70, 20), new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				simulate = !simulate;
+				world.simulate = !world.simulate;
 			}
 		}));
-
 
 		// Reset button
 		stage.addActor(new PButton("Reset", new Int2(10, 50), new Int2(50, 20), new ChangeListener() {
@@ -97,16 +93,13 @@ public class Main extends ApplicationAdapter {
 			}
 		}));
 
-
-
 		// Track button
 		stage.addActor(new PButton("Track", new Int2(10, 80), new Int2(50, 20), new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				trackNext = true;
+				System.out.println("WIP");
 			}
 		}));
-
 
 		// Brush button
 		stage.addActor(new PCheckButton("Brush", new Int2(56, yMax - 30), new Int2(80, 20), new ChangeListener() {
@@ -115,6 +108,7 @@ public class Main extends ApplicationAdapter {
 				brush = !brush;
 			}
 		}));
+
 		// Brush radius minus
 		stage.addActor(new PButton("-", new Int2(150, yMax - 30), new Int2(20, 20), new ChangeListener() {
 			@Override
@@ -123,16 +117,15 @@ public class Main extends ApplicationAdapter {
 				brushRadiusLabel.setText(brushRadius);
 			}
 		}));
+
 		// Brush radius plus
 		stage.addActor(new PButton("+", new Int2(196, yMax - 30), new Int2(20, 20), new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-						brushRadius = min(101, brushRadius + 1);
+				brushRadius = min(101, brushRadius + 1);
 				brushRadiusLabel.setText(brushRadius);
 			}
 		}));
-
-
 
 		// Random brush button
 		stage.addActor(new PCheckButton("Random", new Int2(63, yMax - 50), new Int2(80, 20), new ChangeListener() {
@@ -141,6 +134,7 @@ public class Main extends ApplicationAdapter {
 				brushRandom = !brushRandom;
 			}
 		}));
+
 		// Random chance minus
 		stage.addActor(new PButton("-", new Int2(150, yMax - 50), new Int2(20, 20), new ChangeListener() {
 			@Override
@@ -149,6 +143,7 @@ public class Main extends ApplicationAdapter {
 				brushChanceLabel.setText(spawnChance);
 			}
 		}));
+
 		// Random chance plus
 		stage.addActor(new PButton("+", new Int2(196, yMax - 50), new Int2(20, 20), new ChangeListener() {
 			@Override
@@ -158,15 +153,15 @@ public class Main extends ApplicationAdapter {
 			}
 		}));
 
-
 		// Spawn rate minus
 		stage.addActor(new PButton("-", new Int2(150, yMax - 70), new Int2(20, 20), new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				spawnChance = max(1, spawnChance - 1);
-				brushChanceLabel.setText(spawnChance);
+				spawnRate = max(1, spawnRate - 1);
+				spawnRateLabel.setText(spawnRate);
 			}
 		}));
+
 		// Spawn rate plus
 		stage.addActor(new PButton("+", new Int2(196, yMax - 70), new Int2(20, 20), new ChangeListener() {
 			@Override
@@ -176,8 +171,8 @@ public class Main extends ApplicationAdapter {
 			}
 		}));
 
-
-		for (int i = 0; i < Particle.TYPES.size(); i++) { // Adds all particle types buttons
+		// Adds all particle types buttons
+		for (int i = 0; i < Particle.TYPES.size(); i++) {
 
 			final Particle particle = Particle.DATA.get(Particle.TYPES.get(i));
 
@@ -188,10 +183,8 @@ public class Main extends ApplicationAdapter {
 					spawnIndexLabel.setText("Particle: " + spawnType);
 				}
 			}));
-
 		}
 	}
-
 
 	@Override
 	public void render () {
@@ -200,7 +193,7 @@ public class Main extends ApplicationAdapter {
 
 		inputs();
 
-		if (simulate) world.tick(deltaTime);
+		world.tick(deltaTime);
 
 		draw();
 
@@ -220,8 +213,6 @@ public class Main extends ApplicationAdapter {
 
 
 
-	private final Random random = new Random();
-
 	private void inputs() {
 		final boolean inputMouseLeft = Gdx.input.isButtonPressed(Input.Keys.LEFT);
 
@@ -232,39 +223,13 @@ public class Main extends ApplicationAdapter {
 				(int) floor(mousePos.y / pixelSize)
 		);
 
-
 		if (inputMouseLeft) {
-			if (trackNext && isInWorld(gridPos.x, gridPos.y)) {
-
-				trackNext = false;
+			if (spawn >= spawnRate) {
+				world.spawn(gridPos, brushRadius, spawnType, brush, brushRandom, spawnChance);
+				spawn = 0;
 			}
-			else if (spawn == 0) {
-				if (isInWorld(gridPos.x, gridPos.y)) { // FIXME : MAKE TO METHOD
-
-					if (brush) {
-						for (int x = Math.max(gridPos.x- brushRadius, 0); x < min(gridPos.x+ brushRadius, World.width); x++) {
-							for (int y = Math.max(gridPos.y- brushRadius, 0); y < min(gridPos.y+ brushRadius, World.length); y++) {
-
-								if (!brushRandom) {
-									world.setParticle(x, y, new Particle(spawnType));
-								} else if(random.nextInt(100) < spawnChance) {
-									world.setParticle(x, y, new Particle(spawnType));
-								}
-
-							}
-						}
-					}
-					else {
-						world.setParticle(gridPos, new Particle(spawnType));
-					}
-
-				} spawn = spawnRate;
-			} else spawn--;
-		} else spawn = 0;
-	}
-
-	private boolean isInWorld(int x, int y) {
-		return 0 <= x && x < World.width && 0 <= y && y < World.length;
+			else spawn++;
+		}
 	}
 
 	private void draw() {
