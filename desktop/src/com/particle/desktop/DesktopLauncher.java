@@ -15,5 +15,6 @@ public class DesktopLauncher {
 		config.resizable = false; // Because particle spawning wont work otherwise
 
 		new LwjglApplication(new Main(), config);
+
 	}
 }

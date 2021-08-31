@@ -53,6 +53,7 @@ public class Particle {
     public int density;
     public boolean updated = false;
     public String color;
+    public boolean[] collison = {false, true, false, false};
 
     // Physics
     public Int2 position = new Int2();

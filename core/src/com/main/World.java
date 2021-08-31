@@ -14,8 +14,8 @@ public class World {
 
 
     // TODO : size get()
-    public static int width = 24;
-    public static int length = 24;
+    public static int width = 256;
+    public static int length = 256;
 
     private final int gravity = -10;
 

@@ -23,7 +23,7 @@ import static java.lang.Math.*;
 // TODO : Fire and Wood
 public class Main extends ApplicationAdapter {
 
-	public static final int pixelSize = 16;
+	public static final int pixelSize = 1;
 
 	private SpriteBatch batch;
 	private ShapeRenderer shapeRenderer;
