@@ -74,36 +74,46 @@ public class World {
             }
         }
 
-        for (int x = 0; x < width; x++) {
+        for (int x = 0; x < width; x+= 2) {
             for (int y = 0; y < length; y++) {
 
-                Int2 position = new Int2(x, y);
-
-                Particle particle = this.getParticle(position);
-
-                if (particle.updated) continue; // Skip updated particles
-
-                switch (particle.type) {
-
-                    case "air":
-                    case "null":
-                    case "iron":
-                        break;
-
-
-                    default:
-
-
-                        updateParticle(position, deltaTime);
-
-                        //collisionDetection(position);
-
-                        break;
-                }
-
-                particle.updated = true;
+                toBeNamed(deltaTime, x, y);
             }
         }
+
+        for (int x = width - 1; x > 0; x-= 2) {
+            for (int y = 0; y < length; y++) {
+
+                toBeNamed(deltaTime, x, y);
+            }
+        }
+    }
+
+    private void toBeNamed(float deltaTime, int x, int y) {
+        Int2 position = new Int2(x, y);
+
+        Particle particle = this.getParticle(position);
+
+        if (particle.updated) return;
+
+        switch (particle.type) {
+
+            case "air":
+            case "null":
+            case "iron":
+                break;
+
+            default:
+
+
+                updateParticle(position, deltaTime);
+
+                //collisionDetection(position);
+
+                break;
+        }
+
+        particle.updated = true;
     }
 
     // Particle logic
