@@ -14,8 +14,8 @@ public class World {
 
 
     // TODO : size get()
-    public static int width = 256;
-    public static int length = 256;
+    public static int width = 32;
+    public static int length = 32;
 
     private final int gravity = -10;
 
@@ -77,19 +77,23 @@ public class World {
         for (int x = 0; x < width; x+= 2) {
             for (int y = 0; y < length; y++) {
 
-                toBeNamed(deltaTime, x, y);
+                tickParticle(deltaTime, x, y);
             }
         }
 
         for (int x = width - 1; x > 0; x-= 2) {
             for (int y = 0; y < length; y++) {
 
-                toBeNamed(deltaTime, x, y);
+                tickParticle(deltaTime, x, y);
             }
         }
     }
 
-    private void toBeNamed(float deltaTime, int x, int y) {
+    private void tickParticle(float deltaTime, int x, int y) { // Better Name
+
+        // Movement
+        // Collision
+
         Int2 position = new Int2(x, y);
 
         Particle particle = this.getParticle(position);
@@ -103,13 +107,23 @@ public class World {
             case "iron":
                 break;
 
-            default:
+            case "water" :
 
+                Particle particleAbove = this.getParticle(position.offset(0, 1));
 
+                if(particleAbove.type.equals("water")) {
+                    particle.pressure = particleAbove.pressure + 1;
+                }
+                else particle.pressure = 0;
+
+                collisionDetection(position);
                 updateParticle(position, deltaTime);
+                break;
 
-                //collisionDetection(position);
 
+            default:
+                collisionDetection(position);
+                updateParticle(position, deltaTime);
                 break;
         }
 
@@ -127,14 +141,13 @@ public class World {
 
         if (dir == 0) dir = -1;
 
-        if ( this.getParticle(position.x, position.y - 1).density < density) {
+        if (!particle.collision[2]) {
 
             particle.velocity.y += gravity * deltaTime;
 
             applyVelocity(position, particle.velocity);
             return;
         }
-        else particle.velocity.y = 0;
 
         if ( this.getParticle(position.x + dir, position.y - 1).density < density ) {
             movePosition(position.x, position.y, dir, - 1);
@@ -195,36 +208,50 @@ public class World {
             } else break;
         }
     }
-    /*
+
     private void collisionDetection(Int2 position) {
 
         Particle particle = this.getParticle(position);
 
-        if (particle.density < this.getParticle(position.offset(0, 1)).density) {
+        if (particle.density <= this.getParticle(position.offset(0, 1)).density) {
             particle.collision[0] = true;
             if (0 < particle.velocity.y) particle.velocity.y = 0;
         }
         else particle.collision[0] = false;
-        if (particle.density < this.getParticle(position.offset(1, 0)).density) {
+
+        if (particle.density <= this.getParticle(position.offset(1, 0)).density) {
             particle.collision[1] = true;
             if (0 < particle.velocity.x) particle.velocity.x = 0;
         }
         else particle.collision[1] = false;
-        if (particle.density < this.getParticle(position.offset(0, -1)).density) {
+
+        if (particle.density <= this.getParticle(position.offset(0, -1)).density) {
             particle.collision[2] = true;
-            if (particle.velocity.y < 0) particle.velocity.y = 0;
+            if (0 > particle.velocity.y) particle.velocity.y = 0;
         }
         else particle.collision[2] = false;
-        if (particle.density < this.getParticle(position.offset(-1, 0)).density) {
+
+        if (particle.density <= this.getParticle(position.offset(-1, 0)).density) {
             particle.collision[3] = true;
-            if (particle.velocity.x < 0) particle.velocity.x = 0;
+            if (0 > particle.velocity.x) particle.velocity.x = 0;
         }
         else particle.collision[3] = false;
-    } // Broken AF
-    */
+    }
+
+    // UwU
+
+    public boolean isParticleTypeSurrounded(Int2 position) {
+
+        String type = this.getParticle(position).type;
+
+        if (!type.equals(this.getParticle(position.offset(0, 1)).type)) return false;
+        if (!type.equals(this.getParticle(position.offset(1, 0)).type)) return false;
+        if (!type.equals(this.getParticle(position.offset(0, -1)).type)) return false;
+        if (!type.equals(this.getParticle(position.offset(-1, 0)).type)) return false;
+        return true;
+    }
 
     // Misc / To be named
-
 
     public void spawn(Int2 pos, int radius, String type, boolean isBrush, boolean isRandom, int spawnChance) {
 

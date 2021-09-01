@@ -23,7 +23,7 @@ import static java.lang.Math.*;
 // TODO : Fire and Wood
 public class Main extends ApplicationAdapter {
 
-	public static final int pixelSize = 1;
+	public static final int pixelSize = 16;
 
 	private SpriteBatch batch;
 	private ShapeRenderer shapeRenderer;
@@ -196,7 +196,6 @@ public class Main extends ApplicationAdapter {
 		world.tick(deltaTime);
 
 		draw();
-
 	}
 
 	// Input handling
@@ -220,16 +219,17 @@ public class Main extends ApplicationAdapter {
 				(int) floor(mousePos.y / pixelSize)
 		);
 
-		if(dataNext && dataStop) {
+		if(dataNext && dataStop && !inputMouseLeft) {
 			dataNext = false;
 			dataStop = false;
 		}
-		else if (dataNext && inputMouseLeft) {
-			this.world.getParticle(gridPos).printData();
+		else if (dataNext && !dataStop && inputMouseLeft) {
+			Particle p = this.world.getParticle(gridPos);
+			Particle.printData(p);
 			System.out.println("---------------------------");
 			dataStop = true;
 		}
-		else if (inputMouseLeft) {
+		else if (!dataStop && inputMouseLeft) {
 			if (spawn >= spawnRate) {
 				world.spawn(gridPos, brushRadius, spawnType, brush, brushRandom, spawnChance);
 				spawn = 0;
@@ -246,8 +246,8 @@ public class Main extends ApplicationAdapter {
 
 		for (int x = 0; x < World.width; x++) {
 			for (int y = 0; y < World.length; y++) {
-				String color = world.getParticle(x, y).color;
-				shapeRenderer.setColor(Particle.COLOR.get(color));
+
+				shapeRenderer.setColor(Particle.COLOR.get(world.getParticle(x, y).color));
 				shapeRenderer.rect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
 			}
 		}

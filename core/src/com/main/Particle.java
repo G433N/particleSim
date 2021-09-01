@@ -4,8 +4,10 @@ import com.badlogic.gdx.graphics.Color;
 import com.main.math.Float2;
 import com.main.math.Int2;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -53,13 +55,15 @@ public class Particle {
     public int density;
     public boolean updated = false;
     public String color;
-    public boolean[] collison = {false, true, false, false};
+    public boolean[] collision = {false, false, false, false}; // 0 = Top, 1 = Right, 2 = Bottom, 3 = Left
 
     // Physics
     public Int2 position = new Int2();
     public Float2 velocity = new Float2();
 
-    // public boolean[] collision = new boolean[]{false, false, false, false}; // Fixme
+    // Type specific
+
+    public int pressure = 0;
 
 
     public Particle(String type) {
@@ -81,33 +85,42 @@ public class Particle {
         this.color = color;
     }
 
-    public void printData() {
+    public boolean isSurrounded() {
+        for (boolean b : this.collision) {
+            if(!b) return false;
+        }
+        return true;
+    }
 
-        Field[] fields = this.getClass().getFields();
+    public static void printData(Particle p) {
 
-        System.out.println(this);
+        Field[] fields = p.getClass().getFields();
+        System.out.println(p);
 
         for (Field field : fields) {
 
             if(Modifier.isStatic(field.getModifiers())) continue;
-
             try {
                 String name = field.getName();
-                Object value = field.get(this);
-                System.out.println(name + ": " + value.toString());
+                Object value = field.get(p); //
+
+                System.out.print(name + " : ");
+
+                try {
+                    int length = Array.getLength(value);
+                    System.out.print("[ ");
+                    for (int i = 0; i < length; i++) {
+                        System.out.print(Array.get(value, i).toString() + ", ");
+                    }
+                    System.out.println("]");
+                }
+                catch (IllegalArgumentException e) {
+                    System.out.println(value.toString());
+                }
 
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
         }
     }
-
-    /*
-    a = 10
-    v = v_0 + a * deltaT
-    V vector2 (v_x, v_y)
-    V vector3 (n_v_x, n_v_y, v)
-    V vector2 (radianer, v)
-    p = p_0 + v * deltaT
-     */
 }
