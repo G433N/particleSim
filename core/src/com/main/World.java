@@ -8,14 +8,16 @@ import java.util.Random;
 
 import static com.badlogic.gdx.math.MathUtils.random;
 import static java.lang.Math.min;
+import static java.lang.Math.max;
 import static java.lang.Math.round;
+import static java.lang.Math.abs;
 
 public class World {
 
 
     // TODO : size get()
-    public static int width = 32;
-    public static int length = 32;
+    public static int width = 128;
+    public static int length = 128;
 
     private final int gravity = -10;
 
@@ -86,7 +88,6 @@ public class World {
                     case "iron":
                         break;
                     default:
-                        collisionDetection(position);
                         calculateParticle(position, deltaTime);
                 }
             }
@@ -97,6 +98,8 @@ public class World {
             for (int y = 0; y < length; y++) {
 
                 Int2 position = new Int2(x, y);
+
+                if(this.getParticle(position).moved) continue;
 
                 switch (this.getParticle(position).type) {
                     case "air":
@@ -114,20 +117,41 @@ public class World {
 
     public void calculateParticle(Int2 position, float deltaTime) {
 
+        collisionDetection(position);
+
         Particle particle = this.getParticle(position);
+
+        if (!particle.collision[2]) {
+            particle.velocity.y += gravity * deltaTime;
+            return;
+        }
 
         if(particle.liquid) {
 
             Particle particleAbove = this.getParticle(position.offset(0, 1));
 
-            if(particleAbove.type.equals("water")) {
-                particle.pressure = particleAbove.pressure + 1;
+            if(particleAbove.liquid) {
+                particle.depth = particleAbove.depth + 1;
             }
-            else particle.pressure = 0;
-        }
+            else {
+                particle.depth = 0;
+            }
 
-        if (!particle.collision[2]) {
-            particle.velocity.y += gravity * deltaTime;
+            java.util.Random random = new Random();
+            int dir = random.nextInt(2);
+
+            float x = min(particle.depth/2, 5) + 0.7f;
+            
+            if(dir == 0) {
+                if(!particle.collision[1]) {
+                    particle.velocity.x += x;
+                }
+            }
+            else {
+                if (!particle.collision[3]) {
+                    particle.velocity.x -= x;
+                }
+            }
         }
     }
 
@@ -154,12 +178,14 @@ public class World {
             movePosition(position.x, position.y, dir, - 1);
             return;
         }
-
+        /*
         if (!particle.liquid) return;
 
-        if ( this.getParticle(position.x + dir, position.y).density < density) {
-            movePosition(position.x, position.y, dir, 0);
-        }
+        for (int i = 1; i <= 2; i++) {
+            if ( this.getParticle(position.x + dir, position.y).density < density) {
+                movePosition(position.x, position.y, dir, 0);
+            }
+        }*/
     }
 
     private void movePosition(int x, int y, int dx, int dy) { // Position, deltaPosition

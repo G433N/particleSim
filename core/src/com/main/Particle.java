@@ -63,7 +63,7 @@ public class Particle {
 
     // Type specific
 
-    public int pressure = 0;
+    public int depth = 0; // For liquids
 
 
     public Particle(String type) {
