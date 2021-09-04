@@ -70,84 +70,85 @@ public class World {
         // Reset all particles
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < length; y++) {
-                this.getParticle(x, y).updated = false;
+                this.getParticle(x, y).moved = false;
             }
         }
 
-        for (int x = 0; x < width; x+= 2) {
+        // First loop : Calculations
+        for (int x = 0; x < width; x++) {
             for (int y = 0; y < length; y++) {
 
-                tickParticle(deltaTime, x, y);
-            }
-        }
+                Int2 position = new Int2(x, y);
 
-        for (int x = width - 1; x > 0; x-= 2) {
-            for (int y = 0; y < length; y++) {
-
-                tickParticle(deltaTime, x, y);
-            }
-        }
-    }
-
-    private void tickParticle(float deltaTime, int x, int y) { // Better Name
-
-        // Movement
-        // Collision
-
-        Int2 position = new Int2(x, y);
-
-        Particle particle = this.getParticle(position);
-
-        if (particle.updated) return;
-
-        switch (particle.type) {
-
-            case "air":
-            case "null":
-            case "iron":
-                break;
-
-            case "water" :
-
-                Particle particleAbove = this.getParticle(position.offset(0, 1));
-
-                if(particleAbove.type.equals("water")) {
-                    particle.pressure = particleAbove.pressure + 1;
+                switch (this.getParticle(position).type) {
+                    case "air":
+                    case "null":
+                    case "iron":
+                        break;
+                    default:
+                        collisionDetection(position);
+                        calculateParticle(position, deltaTime);
                 }
-                else particle.pressure = 0;
-
-                collisionDetection(position);
-                updateParticle(position, deltaTime);
-                break;
-
-
-            default:
-                collisionDetection(position);
-                updateParticle(position, deltaTime);
-                break;
+            }
         }
 
-        particle.updated = true;
+        // Second loop : Movement
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < length; y++) {
+
+                Int2 position = new Int2(x, y);
+
+                switch (this.getParticle(position).type) {
+                    case "air":
+                    case "null":
+                    case "iron":
+                        break;
+                    default:
+                        updateParticle(position);
+                }
+            }
+        }
     }
 
     // Particle logic
-    public void updateParticle(Int2 position, float deltaTime) { // TODO : Make switch
+
+    public void calculateParticle(Int2 position, float deltaTime) {
 
         Particle particle = this.getParticle(position);
-        final int density = particle.density;
 
-        java.util.Random random = new Random();
-        int dir = random.nextInt(2);
+        if(particle.liquid) {
 
-        if (dir == 0) dir = -1;
+            Particle particleAbove = this.getParticle(position.offset(0, 1));
+
+            if(particleAbove.type.equals("water")) {
+                particle.pressure = particleAbove.pressure + 1;
+            }
+            else particle.pressure = 0;
+        }
 
         if (!particle.collision[2]) {
-
             particle.velocity.y += gravity * deltaTime;
+        }
+    }
 
+    public void updateParticle(Int2 position) { // TODO : Make switch
+
+        Particle particle = this.getParticle(position);
+
+        if(particle.moved) return;
+        else particle.moved = true;
+
+        if(!particle.velocity.isZero()) {
             applyVelocity(position, particle.velocity);
             return;
         }
+
+        final int density = particle.density;
+
+        java.util.Random random = new Random();
+
+        int dir = random.nextInt(2);
+        if (dir == 0) dir = -1;
 
         if ( this.getParticle(position.x + dir, position.y - 1).density < density ) {
             movePosition(position.x, position.y, dir, - 1);
@@ -156,11 +157,9 @@ public class World {
 
         if (!particle.liquid) return;
 
-
         if ( this.getParticle(position.x + dir, position.y).density < density) {
             movePosition(position.x, position.y, dir, 0);
         }
-
     }
 
     private void movePosition(int x, int y, int dx, int dy) { // Position, deltaPosition

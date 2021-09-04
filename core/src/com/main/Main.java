@@ -247,6 +247,8 @@ public class Main extends ApplicationAdapter {
 		for (int x = 0; x < World.width; x++) {
 			for (int y = 0; y < World.length; y++) {
 
+				//if (!world.getParticle(x, y).liquid) continue;
+
 				shapeRenderer.setColor(Particle.COLOR.get(world.getParticle(x, y).color));
 				shapeRenderer.rect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
 			}

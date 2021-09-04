@@ -53,7 +53,7 @@ public class Particle {
     public final String type;
     public boolean liquid; // TODO : Gas, liquid and fast form
     public int density;
-    public boolean updated = false;
+    public boolean moved = false; /// This frame it can't get calculated twice
     public String color;
     public boolean[] collision = {false, false, false, false}; // 0 = Top, 1 = Right, 2 = Bottom, 3 = Left
 
