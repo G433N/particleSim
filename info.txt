@@ -1,0 +1,12 @@
+
+Links NOITA:
+https://80.lv/articles/noita-a-game-based-on-falling-sand-simulation/
+
+
+
+Links fluid dynmics:
+https://google.github.io/liquidfun/
+https://www.google.com/search?q=2d+fluid+simulatio&rlz=1C1ASUM_enSE873SE873&oq=2d+fluid+simulatio&aqs=chrome..69i57j0i512l6j69i60.452j0j7&sourceid=chrome&ie=UTF-8
+https://www.youtube.com/results?search_query=2d+fluid+simulation
+
+But How DO Fluid Simulations Work? : https://www.youtube.com/watch?v=qsYE1wMEMPA

@@ -99,8 +99,6 @@ public class World {
 
                 Int2 position = new Int2(x, y);
 
-                if(this.getParticle(position).moved) continue;
-
                 switch (this.getParticle(position).type) {
                     case "air":
                     case "null":
@@ -121,10 +119,9 @@ public class World {
 
         Particle particle = this.getParticle(position);
 
-        if (!particle.collision[2]) {
-            particle.velocity.y += gravity * deltaTime;
-            return;
-        }
+        particle.velocity.y += gravity * deltaTime;
+
+        if (!particle.collision[2]) return;
 
         if(particle.liquid) {
 
@@ -141,7 +138,7 @@ public class World {
             int dir = random.nextInt(2);
 
             float x = min(particle.depth/2, 5) + 0.7f;
-            
+
             if(dir == 0) {
                 if(!particle.collision[1]) {
                     particle.velocity.x += x;
@@ -162,7 +159,7 @@ public class World {
         if(particle.moved) return;
         else particle.moved = true;
 
-        if(!particle.velocity.isZero()) {
+        if(!particle.velocity.isZero(0.2f)) {
             applyVelocity(position, particle.velocity);
             return;
         }

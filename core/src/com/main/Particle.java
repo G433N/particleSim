@@ -38,7 +38,7 @@ public class Particle {
         }
 
         COLOR = new HashMap<>();
-        COLOR.put("air"         ,   new Color(0, 191/255f, 1, 1));
+        COLOR.put("air"         ,   Color.BLACK);//new Color(0, 191/255f, 1, 1))
         COLOR.put("sand"       ,   new Color(194/255f, 178/255f, .5f, 1));
         COLOR.put("sand2"       ,   new Color(194/255f, 173/255f, .5f, 1));
         COLOR.put("sand3"       ,   new Color(194/255f, 184/255f, .5f, 1));
