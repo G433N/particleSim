@@ -12,6 +12,8 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.main.math.Float2;
 import com.main.math.Int2;
+import com.main.particle.Particle;
+import com.main.particle.ParticleWorld;
 import com.main.ui.PButton;
 import com.main.ui.PCheckButton;
 import com.main.ui.PLabel;
@@ -23,14 +25,14 @@ import static java.lang.Math.*;
 // TODO : Fire and Wood
 public class Main extends ApplicationAdapter {
 
-	public static final int pixelSize = 4;
+	public static final int pixelSize = 16;
 
 	private SpriteBatch batch;
 	private ShapeRenderer shapeRenderer;
 
 	private Stage stage;
 
-	private World world;
+	private ParticleWorld world;
 
 	private final Float2 mousePos = new Float2();
 	private final Int2 gridPos = new Int2();
@@ -45,7 +47,7 @@ public class Main extends ApplicationAdapter {
 
 		UI();
 
-		world = new World();
+		world = new ParticleWorld();
 	}
 
 	private PLabel spawnIndexLabel;
@@ -89,7 +91,11 @@ public class Main extends ApplicationAdapter {
 		stage.addActor(new PButton("Reset", new Int2(10, 50), new Int2(50, 20), new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				world = new World();
+				for (int x = 0; x < ParticleWorld.width; x++) {
+					for (int y = 0; y < ParticleWorld.length; y++) {
+						world.setParticle(x, y, "empty");
+					}
+				}
 			}
 		}));
 
@@ -172,15 +178,15 @@ public class Main extends ApplicationAdapter {
 		}));
 
 		// Adds all particle types buttons
-		for (int i = 0; i < Particle.TYPES.size(); i++) {
+		for (int i = 0; i < Particle.TYPES.length; i++) {
 
-			final Particle particle = Particle.DATA.get(Particle.TYPES.get(i));
+			final String type = Particle.TYPES[i];
 
-			stage.addActor(new PButton(particle.type, new Int2(10, yMax - 30 - 30 * i), new Int2(50, 20), new ChangeListener() {
+			stage.addActor(new PButton(type, new Int2(10, yMax - 30 - 30 * i), new Int2(50, 20), new ChangeListener() {
 				@Override
 				public void changed(ChangeEvent event, Actor actor) {
-					spawnType = particle.type;
-					spawnIndexLabel.setText("Particle: " + spawnType);
+					spawnType = type;
+					spawnIndexLabel.setText("Particle: " + type);
 				}
 			}));
 		}
@@ -203,7 +209,7 @@ public class Main extends ApplicationAdapter {
 	private int spawn = 0;
 	private int spawnRate = 1;
 	private int spawnChance = 5;
-	private String spawnType = Particle.TYPES.get(0);
+	private String spawnType = "sand";
 	private int brushRadius = 5;
 
 	private boolean brush = false;
@@ -213,7 +219,7 @@ public class Main extends ApplicationAdapter {
 		final boolean inputMouseLeft = Gdx.input.isButtonPressed(Input.Keys.LEFT);
 
 		// get mousePos and mousePos -> gridPos
-		mousePos.set(Gdx.input.getX(), World.length * pixelSize - Gdx.input.getY());
+		mousePos.set(Gdx.input.getX(), ParticleWorld.length * pixelSize - Gdx.input.getY());
 		gridPos.set(
 				(int) floor(mousePos.x / pixelSize),
 				(int) floor(mousePos.y / pixelSize)
@@ -224,8 +230,9 @@ public class Main extends ApplicationAdapter {
 			dataStop = false;
 		}
 		else if (dataNext && !dataStop && inputMouseLeft) {
+
 			Particle p = this.world.getParticle(gridPos);
-			Particle.printData(p);
+			p.printData();
 			System.out.println("---------------------------");
 			dataStop = true;
 		}
@@ -244,12 +251,12 @@ public class Main extends ApplicationAdapter {
 
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
-		for (int x = 0; x < World.width; x++) {
-			for (int y = 0; y < World.length; y++) {
+		for (int x = 0; x < ParticleWorld.width; x++) {
+			for (int y = 0; y < ParticleWorld.length; y++) {
 
 				//if (!world.getParticle(x, y).liquid) continue;
 
-				shapeRenderer.setColor(Particle.COLOR.get(world.getParticle(x, y).color));
+				shapeRenderer.setColor(world.getParticle(x, y).getColor());
 				shapeRenderer.rect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
 			}
 		}

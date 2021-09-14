@@ -1,13 +1,12 @@
 package com.main.ui;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.main.Main;
-import com.main.World;
+import com.main.OldWorld;
 import com.main.math.Int2;
+import com.main.particle.ParticleWorld;
 
 public class PLabel extends Label{
 
@@ -19,6 +18,6 @@ public class PLabel extends Label{
 
     public PLabel(String text, Int2 position) {
         super(text, skin);
-        setPosition( World.width * Main.pixelSize + position.x, position.y );
+        setPosition( ParticleWorld.width * Main.pixelSize + position.x, position.y );
     }
 }

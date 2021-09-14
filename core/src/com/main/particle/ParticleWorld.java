@@ -1,62 +1,76 @@
-package com.main;
+package com.main.particle;
 
-import com.badlogic.gdx.math.Vector2;
-import com.main.math.Float2;
+import com.main.OldParticle;
+import com.main.OldWorld;
 import com.main.math.Int2;
-
-import java.util.Random;
 
 import static com.badlogic.gdx.math.MathUtils.random;
 import static java.lang.Math.min;
-import static java.lang.Math.max;
 import static java.lang.Math.round;
-import static java.lang.Math.abs;
 
-public class World {
+public class ParticleWorld {
+    /*
+        DATA.put("air"     ,   new Particle("air"   ,0  ,false  , "air"));
+        DATA.put("null"    ,   new Particle("null"  ,999,false  , "air"));
+        DATA.put("sand"    ,   new Particle("sand"  ,2  ,false  , "sand"));
+        DATA.put("water"   ,   new Particle("water" ,1  ,true   , "shallowwater"));
+        DATA.put("iron"    ,   new Particle("iron"  ,999,false  , "iron"));
+     */
 
+    public static int width = 24;
+    public static int length = 24;
 
-    // TODO : size get()
-    public static int width = 128;
-    public static int length = 128;
-
-    private final int gravity = -10;
-
-    public boolean simulate = false;
+    protected final int gravity = -10;
 
     Particle[][] grid;
 
+    public boolean simulate = false;
 
-    public World() {
+    public ParticleWorld() {
+
+        Particle.init(this);
 
         this.grid = new Particle[width][length];
 
-        // Fill grid with air particles
-
+        // Fill grid with air particle
         for (int x = 0; x < width; x++) {
-
             for (int y = 0; y < length; y++) {
-
-                this.grid[x][y] = new Particle("air");
-                this.grid[x][y].position = new Int2(x, y);
+                this.setParticle(x, y, "empty");
             }
         }
     }
 
     // Setters and getters
+
     public Particle getParticle(int x, int y) {
         if (0 <= x && x < width && 0 <= y && y < length) {
             return this.grid[x][y];
         }
-        return new Particle("null");
+        return Particle.get("null");
     }
 
     public Particle getParticle(Int2 position) {
         return getParticle(position.x, position.y);
     }
 
+    private int q = 0;
+
     public void setParticle(int x, int y, Particle p) {
-        p.position.set(x, y);
+        //p.position.set(x, y);
         this.grid[x][y] = p;
+        this.grid[x][y].position.set(x, y);
+
+    }
+
+    public void setParticle(int x, int y, int nx, int ny) {
+        //System.out.println(q + " " + p + " -> " + x + " " + y);
+        Particle p = this.getParticle(x, y);
+        p.position.set(nx, ny);
+        this.grid[nx][ny] = p;
+    }
+
+    public void setParticle(int x, int y, String type) {
+        this.setParticle(x, y, Particle.get(type));
     }
 
     public void setParticle(Int2 pos, Particle p) {
@@ -64,56 +78,37 @@ public class World {
         setParticle(pos.x, pos.y, p);
     }
 
-    // Update world
+
+    // Tick
+
     public void tick(float deltaTime) {
 
         if (!simulate) return;
 
-        // Reset all particles
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < length; y++) {
-                this.getParticle(x, y).moved = false;
-            }
-        }
 
-        // First loop : Calculations
+        // First loop
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < length; y++) {
 
                 Int2 position = new Int2(x, y);
-
-                switch (this.getParticle(position).type) {
-                    case "air":
-                    case "null":
-                    case "iron":
-                        break;
-                    default:
-                        calculateParticle(position, deltaTime);
-                }
+                this.getParticle(position).moved = false;
+                this.getParticle(position).primaryUpdate(deltaTime);
             }
         }
 
-        // Second loop : Movement
+        // Second loop
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < length; y++) {
 
                 Int2 position = new Int2(x, y);
-
-                switch (this.getParticle(position).type) {
-                    case "air":
-                    case "null":
-                    case "iron":
-                        break;
-                    default:
-                        updateParticle(position);
-                }
+                this.getParticle(position).secondaryUpdate(deltaTime);
             }
         }
     }
 
     // Particle logic
-
-    public void calculateParticle(Int2 position, float deltaTime) {
+    /*
+    private void calculateParticle(Int2 position, float deltaTime) {
 
         collisionDetection(position);
 
@@ -152,7 +147,8 @@ public class World {
         }
     }
 
-    public void updateParticle(Int2 position) { // TODO : Make switch
+
+    private void updateParticle(Int2 position) { // TODO : Make switch
 
         Particle particle = this.getParticle(position);
 
@@ -175,17 +171,18 @@ public class World {
             movePosition(position.x, position.y, dir, - 1);
             return;
         }
-        /*
+
         if (!particle.liquid) return;
 
         for (int i = 1; i <= 2; i++) {
             if ( this.getParticle(position.x + dir, position.y).density < density) {
                 movePosition(position.x, position.y, dir, 0);
             }
-        }*/
+        }
     }
 
-    private void movePosition(int x, int y, int dx, int dy) { // Position, deltaPosition
+    */
+    protected void movePosition(int x, int y, int dx, int dy) { // Position, deltaPosition
 
         dx += x;
         dy += y;
@@ -194,6 +191,8 @@ public class World {
         this.setParticle(dx, dy, this.getParticle(x, y));
         this.setParticle(x, y, temp);
     }
+
+    /*
 
     private void applyVelocity(Int2 position, Float2 velocity) {
 
@@ -260,40 +259,29 @@ public class World {
         else particle.collision[3] = false;
     }
 
-    // UwU
+     */
 
-    public boolean isParticleTypeSurrounded(Int2 position) {
-
-        String type = this.getParticle(position).type;
-
-        if (!type.equals(this.getParticle(position.offset(0, 1)).type)) return false;
-        if (!type.equals(this.getParticle(position.offset(1, 0)).type)) return false;
-        if (!type.equals(this.getParticle(position.offset(0, -1)).type)) return false;
-        if (!type.equals(this.getParticle(position.offset(-1, 0)).type)) return false;
-        return true;
-    }
-
-    // Misc / To be named
+    // Misc
 
     public void spawn(Int2 pos, int radius, String type, boolean isBrush, boolean isRandom, int spawnChance) {
 
         if (isInWorld(pos.x, pos.y)) { // FIXME : MAKE TO METHOD
 
             if (isBrush) {
-                for (int x = Math.max(pos.x - radius, 0); x < min(pos.x + radius, World.width); x++) {
-                    for (int y = Math.max(pos.y - radius, 0); y < min(pos.y + radius, World.length); y++) {
+                for (int x = Math.max(pos.x - radius, 0); x < Math.min(pos.x + radius, OldWorld.width); x++) {
+                    for (int y = Math.max(pos.y - radius, 0); y < min(pos.y + radius, OldWorld.length); y++) {
 
                         if (!isRandom) {
-                            this.setParticle(x, y, new Particle(type));
+                            this.setParticle(x, y, Particle.get(type));
                         } else if(random.nextInt(100) < spawnChance) {
-                            this.setParticle(x, y, new Particle(type));
+                            this.setParticle(x, y, Particle.get(type));
                         }
 
                     }
                 }
             }
             else {
-                this.setParticle(pos, new Particle(type));
+                this.setParticle(pos, Particle.get(type));
             }
         }
     }
@@ -303,9 +291,6 @@ public class World {
     }
 
     public boolean isInWorld(int x, int y) {
-        return 0 <= x && x < World.width && 0 <= y && y < World.length;
+        return 0 <= x && x < ParticleWorld.width && 0 <= y && y < ParticleWorld.length;
     }
-
-
-
 }

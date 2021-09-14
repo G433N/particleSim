@@ -10,20 +10,20 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Particle {
+public class OldParticle {
 
-    public final static HashMap<String, Particle> DATA;
+    public final static HashMap<String, OldParticle> DATA;
     public final static ArrayList<String> TYPES;
     public final static HashMap<String, Color> COLOR;
 
     static {
 
         DATA = new HashMap<>();
-        DATA.put("air"     ,   new Particle("air"   ,0  ,false  , "air"));
-        DATA.put("null"    ,   new Particle("null"  ,999,false  , "air"));
-        DATA.put("sand"    ,   new Particle("sand"  ,2  ,false  , "sand"));
-        DATA.put("water"   ,   new Particle("water" ,1  ,true   , "shallowwater"));
-        DATA.put("iron"    ,   new Particle("iron"  ,999,false  , "iron"));
+        DATA.put("air"     ,   new OldParticle("air"   ,0  ,false  , "air"));
+        DATA.put("null"    ,   new OldParticle("null"  ,999,false  , "air"));
+        DATA.put("sand"    ,   new OldParticle("sand"  ,2  ,false  , "sand"));
+        DATA.put("water"   ,   new OldParticle("water" ,1  ,true   , "shallowwater"));
+        DATA.put("iron"    ,   new OldParticle("iron"  ,999,false  , "iron"));
 
 
         TYPES = new ArrayList<>();
@@ -63,18 +63,17 @@ public class Particle {
     public int depth = 0; // For liquids
 
 
-    public Particle(String type) {
+    public OldParticle(String type) {
         this.type = type;
 
-        Particle data = DATA.get(type);
+        OldParticle data = DATA.get(type);
 
         this.density = data.density;
         this.liquid = data.liquid;
-
         this.color = data.color;
     }
 
-    private Particle(String type, int density, boolean liquid, String color) {
+    private OldParticle(String type, int density, boolean liquid, String color) {
         // for data storage
         this.type = type; // For GUI
         this.density = density;
@@ -89,7 +88,7 @@ public class Particle {
         return true;
     }
 
-    public static void printData(Particle p) {
+    public static void printData(OldParticle p) {
 
         Field[] fields = p.getClass().getFields();
         System.out.println(p);
