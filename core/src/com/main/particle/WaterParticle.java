@@ -11,6 +11,11 @@ public class WaterParticle extends LiquidParticle{
     }
 
     @Override
+    protected void primaryRule(float deltaTime) {
+
+    }
+
+    @Override
     protected void secondaryRule(float deltaTime) {
         if(world.getParticle(this.position.offset(0, -1)).density < this.density) {
             world.movePosition(this.position.x, this.position.y, 0, -1);

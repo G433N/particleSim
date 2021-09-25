@@ -9,13 +9,10 @@ public class EmptyParticle extends Particle {
     }
 
     @Override
-    public void primaryUpdate(float deltaTime) {
-
-    }
+    public void primaryUpdate(float deltaTime) {}
 
     @Override
-    public void secondaryUpdate(float deltaTime) {
-    }
+    public void secondaryUpdate(float deltaTime) {}
 
     @Override
     public Color getColor() {
