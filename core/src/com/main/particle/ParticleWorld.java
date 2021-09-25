@@ -109,81 +109,6 @@ public class ParticleWorld {
     }
 
     // Particle logic
-    /*
-    private void calculateParticle(Int2 position, float deltaTime) {
-
-        collisionDetection(position);
-
-        Particle particle = this.getParticle(position);
-
-        particle.velocity.y += gravity * deltaTime;
-
-        if (!particle.collision[2]) return;
-
-        if(particle.liquid) {
-
-            Particle particleAbove = this.getParticle(position.offset(0, 1));
-
-            if(particleAbove.liquid) {
-                particle.depth = particleAbove.depth + 1;
-            }
-            else {
-                particle.depth = 0;
-            }
-
-            java.util.Random random = new Random();
-            int dir = random.nextInt(2);
-
-            float x = min(particle.depth/2, 5) + 0.7f;
-
-            if(dir == 0) {
-                if(!particle.collision[1]) {
-                    particle.velocity.x += x;
-                }
-            }
-            else {
-                if (!particle.collision[3]) {
-                    particle.velocity.x -= x;
-                }
-            }
-        }
-    }
-
-
-    private void updateParticle(Int2 position) { // TODO : Make switch
-
-        Particle particle = this.getParticle(position);
-
-        if(particle.moved) return;
-        else particle.moved = true;
-
-        if(!particle.velocity.isZero(0.2f)) {
-            applyVelocity(position, particle.velocity);
-            return;
-        }
-
-        final int density = particle.density;
-
-        java.util.Random random = new Random();
-
-        int dir = random.nextInt(2);
-        if (dir == 0) dir = -1;
-
-        if ( this.getParticle(position.x + dir, position.y - 1).density < density ) {
-            movePosition(position.x, position.y, dir, - 1);
-            return;
-        }
-
-        if (!particle.liquid) return;
-
-        for (int i = 1; i <= 2; i++) {
-            if ( this.getParticle(position.x + dir, position.y).density < density) {
-                movePosition(position.x, position.y, dir, 0);
-            }
-        }
-    }
-
-    */
 
     protected void movePosition(int x, int y, int dx, int dy) { // Position, deltaPosition
 
@@ -195,74 +120,6 @@ public class ParticleWorld {
         this.setParticle(x, y, temp);
     }
 
-    void applyVelocity(Int2 position, Float2 velocity) {
-
-        // .cpy() makes a copy of the vector
-
-        Float2 goal = position.toFloat2()
-                .add(velocity);
-
-        final float distance = goal.dst(position.toFloat2());
-        final int roundDistance = round(distance);
-
-        Float2 normal = new Float2(goal.cpy())
-                .add(-position.x, -position.y)
-                .scl(1 / distance); // Distance is already calculated, so using .nor() is ineffective
-
-        Float2 target = position.toFloat2();
-
-
-        for (int t = 0; t < roundDistance; t++) {
-
-            target.add(normal);
-
-            if(position.x == round(target.x) && position.y == round(target.y)) {
-                continue;
-            }
-
-            if (this.getParticle(round(target.x), round(target.y)).density < this.getParticle(position).density) {
-
-                Vector2 delta = new Vector2(round(target.x)-position.x, round(target.y)-position.y);
-
-                movePosition(position.x, position.y, (int) delta.x, (int) delta.y);
-                position.add((int) delta.x, (int) delta.y);
-
-            } else break;
-        }
-    }
-    /*
-
-    private void collisionDetection(Int2 position) {
-
-        Particle particle = this.getParticle(position);
-
-        if (particle.density <= this.getParticle(position.offset(0, 1)).density) {
-            particle.collision[0] = true;
-            if (0 < particle.velocity.y) particle.velocity.y = 0;
-        }
-        else particle.collision[0] = false;
-
-        if (particle.density <= this.getParticle(position.offset(1, 0)).density) {
-            particle.collision[1] = true;
-            if (0 < particle.velocity.x) particle.velocity.x = 0;
-        }
-        else particle.collision[1] = false;
-
-        if (particle.density <= this.getParticle(position.offset(0, -1)).density) {
-            particle.collision[2] = true;
-            if (0 > particle.velocity.y) particle.velocity.y = 0;
-        }
-        else particle.collision[2] = false;
-
-        if (particle.density <= this.getParticle(position.offset(-1, 0)).density) {
-            particle.collision[3] = true;
-            if (0 > particle.velocity.x) particle.velocity.x = 0;
-        }
-        else particle.collision[3] = false;
-    }
-
-     */
-
     // Misc
 
     public void spawn(Int2 pos, int radius, String type, boolean isBrush, boolean isRandom, int spawnChance) {
@@ -270,8 +127,8 @@ public class ParticleWorld {
         if (isInWorld(pos.x, pos.y)) { // FIXME : MAKE TO METHOD
 
             if (isBrush) {
-                for (int x = Math.max(pos.x - radius, 0); x < Math.min(pos.x + radius, OldWorld.width); x++) {
-                    for (int y = Math.max(pos.y - radius, 0); y < min(pos.y + radius, OldWorld.length); y++) {
+                for (int x = Math.max(pos.x - radius, 0); x < Math.min(pos.x + radius, width); x++) {
+                    for (int y = Math.max(pos.y - radius, 0); y < min(pos.y + radius, length); y++) {
 
                         if (!isRandom) {
                             this.setParticle(x, y, Particle.get(type));

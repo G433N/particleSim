@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 public class EmptyParticle extends Particle {
 
     public EmptyParticle() {
-        super("empty", 0);
+        super("empty", -1);
     }
 
     @Override
