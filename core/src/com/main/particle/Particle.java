@@ -115,7 +115,7 @@ public class Particle {
         final float distance = goal.dst(this.position.toFloat2());
         final int roundDistance = round(distance);
 
-        Float2 normal = new Float2(goal.cpy())
+        Float2 normal = new Float2(goal)
                 .add(-this.position.x, -this.position.y)
                 .scl(1 / distance); // Distance is already calculated, so using .nor() is ineffective
 
@@ -126,19 +126,21 @@ public class Particle {
 
             target.add(normal);
 
-            /*
+
             if(this.position.x == round(target.x) && this.position.y == round(target.y)) {
                 continue;
             }
-             */
+
 
             if (world.getParticle(round(target.x), round(target.y)).density < world.getParticle(this.position).density) {
 
                 Int2 delta = new Int2(round(target.x)-position.x, round(target.y)-position.y);
 
-
                 world.movePosition(this.position.x, this.position.y, delta.x, delta.y);
+
                 this.position.add(delta.x, delta.y);
+
+                System.out.println(delta);
 
             } else break;
         }

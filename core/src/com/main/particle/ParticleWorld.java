@@ -1,7 +1,9 @@
 package com.main.particle;
 
+import com.badlogic.gdx.math.Vector2;
 import com.main.OldParticle;
 import com.main.OldWorld;
+import com.main.math.Float2;
 import com.main.math.Int2;
 
 import static com.badlogic.gdx.math.MathUtils.random;
@@ -182,6 +184,7 @@ public class ParticleWorld {
     }
 
     */
+
     protected void movePosition(int x, int y, int dx, int dy) { // Position, deltaPosition
 
         dx += x;
@@ -192,9 +195,7 @@ public class ParticleWorld {
         this.setParticle(x, y, temp);
     }
 
-    /*
-
-    private void applyVelocity(Int2 position, Float2 velocity) {
+    void applyVelocity(Int2 position, Float2 velocity) {
 
         // .cpy() makes a copy of the vector
 
@@ -229,6 +230,7 @@ public class ParticleWorld {
             } else break;
         }
     }
+    /*
 
     private void collisionDetection(Int2 position) {
 
@@ -276,7 +278,6 @@ public class ParticleWorld {
                         } else if(random.nextInt(100) < spawnChance) {
                             this.setParticle(x, y, Particle.get(type));
                         }
-
                     }
                 }
             }
