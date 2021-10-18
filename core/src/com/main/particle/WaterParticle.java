@@ -10,7 +10,7 @@ import static java.lang.Math.random;
 public class WaterParticle extends LiquidParticle{
 
     protected WaterParticle() {
-        super("water", 1);
+        super("water", 1, 0);
         this.colorOffset = (float) (random() * 0.05);
     }
 

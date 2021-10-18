@@ -9,7 +9,7 @@ import static java.lang.Math.random;
 public class SandParticle extends SolidParticle {
 
     protected SandParticle() {
-        super("sand", 2);
+        super("sand", 2, 0);
         this.colorOffset = (float) (random() * 0.05);
     }
 

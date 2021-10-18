@@ -24,6 +24,10 @@ public class Int2 extends GridPoint2 {
         return new Int2(this.x + x, this.y + y);
     }
 
+    public Int2 offset(Int2 v) {
+        return offset(v.x, v.y);
+    }
+
     @Override
     public boolean equals(Object o) {
         return super.equals(o);

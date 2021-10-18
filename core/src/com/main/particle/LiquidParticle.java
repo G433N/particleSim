@@ -4,8 +4,8 @@ public class LiquidParticle extends Particle {
 
     protected int depth = 0;
 
-    protected LiquidParticle(String type, int density) {
-        super(type, density);
+    protected LiquidParticle(String type, int density, float flammability) {
+        super(type, density, flammability);
         this.state = ParticleState.LIQUID;
     }
 

@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.main.math.Float2;
@@ -17,6 +18,7 @@ import com.main.particle.ParticleWorld;
 import com.main.ui.PButton;
 import com.main.ui.PCheckButton;
 import com.main.ui.PLabel;
+import com.main.ui.PSelectBox;
 
 import static java.lang.Math.*;
 
@@ -32,7 +34,7 @@ import static java.lang.Math.*;
 // Ice
 public class Main extends ApplicationAdapter {
 
-	public static final int pixelSize = 16;
+	public static final int pixelSize = 4;
 
 	private SpriteBatch batch;
 	private ShapeRenderer shapeRenderer;
@@ -57,10 +59,10 @@ public class Main extends ApplicationAdapter {
 		world = new ParticleWorld();
 	}
 
-	private PLabel spawnIndexLabel;
 	private PLabel brushRadiusLabel;
 	private PLabel brushChanceLabel;
 	private PLabel spawnRateLabel;
+	private PSelectBox spawnSelect;
 
 
 	private void UI() {
@@ -70,8 +72,7 @@ public class Main extends ApplicationAdapter {
 		int xMax = Gdx.graphics.getWidth();
 		int yMax = Gdx.graphics.getHeight();
 
-		spawnIndexLabel = new PLabel("Particle: " + spawnType, new Int2(10, 10));
-		stage.addActor(spawnIndexLabel);
+
 
 		brushRadiusLabel = new PLabel("" + brushRadius, new Int2(172, yMax - 30));
 		stage.addActor(brushRadiusLabel);
@@ -184,7 +185,18 @@ public class Main extends ApplicationAdapter {
 			}
 		}));
 
+		// Spawn type select
+		spawnSelect = new PSelectBox(Particle.TYPES, new Int2(10, 10), new Int2(100, 20), new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				String type = (String) spawnSelect.getSelected();
+				spawnType = type;
+			}
+		});
+		stage.addActor(spawnSelect);
+
 		// Adds all particle types buttons
+		/*
 		for (int i = 0; i < Particle.TYPES.length; i++) {
 
 			final String type = Particle.TYPES[i];
@@ -197,6 +209,8 @@ public class Main extends ApplicationAdapter {
 				}
 			}));
 		}
+		 */
+
 	}
 
 	@Override
@@ -216,7 +230,7 @@ public class Main extends ApplicationAdapter {
 	private int spawn = 0;
 	private int spawnRate = 1;
 	private int spawnChance = 5;
-	private String spawnType = "sand";
+	private String spawnType = "empty";
 	private int brushRadius = 5;
 
 	private boolean brush = false;

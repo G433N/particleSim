@@ -1,26 +1,14 @@
 package com.main.particle;
 
-import com.badlogic.gdx.math.Vector2;
-import com.main.OldParticle;
-import com.main.OldWorld;
-import com.main.math.Float2;
 import com.main.math.Int2;
 
 import static com.badlogic.gdx.math.MathUtils.random;
 import static java.lang.Math.min;
-import static java.lang.Math.round;
 
 public class ParticleWorld {
-    /*
-        DATA.put("air"     ,   new Particle("air"   ,0  ,false  , "air"));
-        DATA.put("null"    ,   new Particle("null"  ,999,false  , "air"));
-        DATA.put("sand"    ,   new Particle("sand"  ,2  ,false  , "sand"));
-        DATA.put("water"   ,   new Particle("water" ,1  ,true   , "shallowwater"));
-        DATA.put("iron"    ,   new Particle("iron"  ,999,false  , "iron"));
-     */
 
-    public static int width = 24;
-    public static int length = 24;
+    public static int width = 64;
+    public static int length = 64;
 
     protected final int gravity = -10;
 
@@ -52,10 +40,9 @@ public class ParticleWorld {
     }
 
     public Particle getParticle(Int2 position) {
-        return getParticle(position.x, position.y);
+        return this.getParticle(position.x, position.y);
     }
 
-    private int q = 0;
 
     public void setParticle(int x, int y, Particle p) {
         //p.position.set(x, y);
@@ -76,7 +63,6 @@ public class ParticleWorld {
     }
 
     public void setParticle(Int2 pos, Particle p) {
-
         setParticle(pos.x, pos.y, p);
     }
 

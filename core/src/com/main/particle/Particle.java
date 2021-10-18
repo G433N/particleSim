@@ -19,6 +19,7 @@ public class Particle {
 
     public final String type;
     public final int density;
+    public final float flammability; // 0 <= Value <= 1
     public ParticleState state = ParticleState.PARTICLE;
 
     // Physics
@@ -30,7 +31,13 @@ public class Particle {
 
     public static boolean initialized = false;
 
-    public static String[] TYPES = new String[] {"empty", "sand", "water"}; // All public types
+    public static String[] TYPES = new String[] {"empty", "sand", "water", "wood", "fire"}; // All public types
+    protected static Int2[] SURROUNDINGOFFSETS = new Int2[] {
+            new Int2(1, 0),
+            new Int2(0, -1),
+            new Int2(-1, 0),
+            new Int2(0, 1)
+    };
 
     public static Particle get(String type) {
 
@@ -41,10 +48,14 @@ public class Particle {
                 return new NullParticle();
             case "empty" :
                 return new EmptyParticle();
+            case "fire" :
+                return new FireParticle();
             case "sand" :
                 return new SandParticle();
             case "water" :
                 return new WaterParticle();
+            case "wood" :
+                return new WoodParticle();
         }
         throw new Error("Particle type doesn't exist!");
     }
@@ -57,9 +68,10 @@ public class Particle {
         initialized = true;
     }
 
-    protected Particle(String type, int density) {
+    protected Particle(String type, int density, float flammability) {
         this.type = type;
         this.density = density;
+        this.flammability = flammability;
     }
 
     public void primaryUpdate(float deltaTime) {
@@ -137,32 +149,37 @@ public class Particle {
 
                 world.movePosition(this.position.x, this.position.y, delta.x, delta.y);
 
-                // this.position.add(delta.x, delta.y); -> This litte line cost me 1 week
+                // this.position.add(delta.x, delta.y); -> This little line cost me one week
             } else break;
         }
     }
     
-    private void collisionDetection() {
+    protected void collisionDetection() {
 
-        if (this.density <= world.getParticle(position.offset(0, 1)).density) {
+        final Particle UP = world.getParticle(position.offset(0, 1));
+        final Particle RIGHT =  world.getParticle(position.offset(1, 0));
+        final Particle DOWN =  world.getParticle(position.offset(0, -1));
+        final Particle LEFT =  world.getParticle(position.offset(-1, 0));
+
+        if (this.density <= UP.density && UP.state != ParticleState.ENERGY) {
             this.collision[0] = true;
             if (0 < this.velocity.y) this.velocity.y = 0;
         }
         else this.collision[0] = false;
 
-        if (this.density <= world.getParticle(position.offset(1, 0)).density) {
+        if (this.density <= RIGHT.density && RIGHT.state != ParticleState.ENERGY) {
             this.collision[1] = true;
             if (0 < this.velocity.x) this.velocity.x = 0;
         }
         else this.collision[1] = false;
 
-        if (this.density <= world.getParticle(position.offset(0, -1)).density) {
+        if (this.density <= DOWN.density && DOWN.state != ParticleState.ENERGY) {
             this.collision[2] = true;
             if (0 > this.velocity.y) this.velocity.y = 0;
         }
         else this.collision[2] = false;
 
-        if (this.density <= world.getParticle(position.offset(-1, 0)).density) {
+        if (this.density <= LEFT.density && LEFT.state != ParticleState.ENERGY) {
             this.collision[3] = true;
             if (0 > this.velocity.x) this.velocity.x = 0;
         }
