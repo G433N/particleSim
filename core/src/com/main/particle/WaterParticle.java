@@ -4,15 +4,14 @@ import com.badlogic.gdx.graphics.Color;
 
 import java.util.Random;
 
+import static java.lang.Math.min;
+import static java.lang.Math.random;
+
 public class WaterParticle extends LiquidParticle{
 
     protected WaterParticle() {
         super("water", 1);
-    }
-
-    @Override
-    protected void primaryRule(float deltaTime) {
-
+        this.colorOffset = (float) (random() * 0.05);
     }
 
     @Override
@@ -40,8 +39,11 @@ public class WaterParticle extends LiquidParticle{
         }
     }
 
+    private final float colorOffset;
+
     @Override
-    public Color getColor() {
-        return new Color(0, 0, 1, 1);
+    public Color getColor() { // FIXME : Color flickering
+        float blue = (float) (1f - min(this.depth/50f + this.colorOffset, 0.7f));
+        return new Color(0, 0, blue, 1);
     }
 }

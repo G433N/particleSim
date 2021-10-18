@@ -4,10 +4,13 @@ import com.badlogic.gdx.graphics.Color;
 
 import java.util.Random;
 
+import static java.lang.Math.random;
+
 public class SandParticle extends SolidParticle {
 
     protected SandParticle() {
         super("sand", 2);
+        this.colorOffset = (float) (random() * 0.05);
     }
 
     @Override
@@ -28,8 +31,10 @@ public class SandParticle extends SolidParticle {
         }
     }
 
+    private final float colorOffset;
+
     @Override
     public Color getColor() {
-        return new Color(194/255f, 178/255f, .5f, 1);
+        return new Color(194/255f, 178/255f - this.colorOffset, .5f, 1);
     }
 }

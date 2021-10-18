@@ -21,8 +21,15 @@ import com.main.ui.PLabel;
 import static java.lang.Math.*;
 
 
-// TODO : Particle targeting
-// TODO : Fire and Wood
+// TODO TODAY
+// Fire and Wood
+// CO2
+// Bouncing ball
+
+// TODO SOME DAY
+// Pressure
+//	With particle mass and shit
+// Ice
 public class Main extends ApplicationAdapter {
 
 	public static final int pixelSize = 16;

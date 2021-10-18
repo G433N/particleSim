@@ -9,4 +9,17 @@ public class LiquidParticle extends Particle {
         this.state = ParticleState.LIQUID;
     }
 
+    @Override
+    protected void primaryRule(float deltaTime) {
+
+        final Particle particleUP = world.getParticle(this.position.offset(0, 1));
+
+        if (particleUP.state == ParticleState.LIQUID) {
+            LiquidParticle liquidUP = (LiquidParticle) particleUP;
+            this.depth = liquidUP.depth + 1;
+        }
+        else this.depth = 0;
+
+    }
+
 }
