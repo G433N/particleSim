@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 public class EmptyParticle extends Particle {
 
     public EmptyParticle() {
-        super("empty", -1, 0);
+        super("empty", -1, 0.02f);
     }
 
     @Override
@@ -16,14 +16,6 @@ public class EmptyParticle extends Particle {
 
     @Override
     public Color getColor() {
-        return Color.GRAY;
-        /*
-        int x = this.position.x + this.position.y;
-        if(x % 2 == 0) {
-            return Color.GRAY;
-        }
-        else return Color.DARK_GRAY;
-
-         */
+        return new Color(72/255f, 209/255f, 204/255f, 1f);
     }
 }

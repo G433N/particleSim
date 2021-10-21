@@ -18,8 +18,8 @@ public class FireParticle extends EnergyParticle {
     }
     protected FireParticle() {
         super("fire");
-        this.lifeTime = 40;
-        this.maxLifeTime = this.lifeTime;
+        this.lifeTime = 30 + (int) (random() * 20f);
+        this.maxLifeTime = 70;
     }
 
     @Override
@@ -29,17 +29,31 @@ public class FireParticle extends EnergyParticle {
 
     @Override
     public void secondaryUpdate(float deltaTime) {
-        super.secondaryUpdate(deltaTime);
+        if(this.moved) return;
+        else this.moved = true;
         if (this.lifeTime <= 0) {
             world.setParticle(this.position, new EmptyParticle());
         }
 
         if(lifeTime % spreadInterval != 0) return;
 
+        boolean spread = false;
+
         for (Int2 offset : Particle.SURROUNDINGOFFSETS) {
             Int2 pos = this.position.offset(offset);
             if(random() < world.getParticle(pos).flammability) { // random can't return 1;
-                world.setParticle(pos, new FireParticle());
+                if (world.getParticle(pos).type.equals("empty")) world.setParticle(pos, new FireParticle(this.lifeTime));
+                else world.setParticle(pos, new FireParticle());
+                world.getParticle(pos).moved = true;
+                spread = true;
+            }
+        }
+
+        if (spread) return;
+        for (Int2 offset : new Int2[] {new Int2(0, 1), new Int2(0, 2), new Int2(0, 3), new Int2(0, 4)}) { // TODO : Make to function
+            Int2 pos = this.position.offset(offset);
+            if(random() < world.getParticle(pos).flammability/2) { // random can't return 1;
+                world.setParticle(pos, new FireParticle(this.lifeTime + (int) (random() * 10f)));
                 world.getParticle(pos).moved = true;
             }
         }
@@ -51,7 +65,7 @@ public class FireParticle extends EnergyParticle {
         float t = (float) (this.lifeTime)/this.maxLifeTime;
 
         Color B = new Color(254/255f, 222/255f, 23/255f, 0.5f);
-        Color A = new Color(247/255f, 55/255f, 25/255f, 1f);
+        Color A = new Color(247/255f, 100/255f, 25/255f, 1f);
 
         return B.lerp(A, t);
     }

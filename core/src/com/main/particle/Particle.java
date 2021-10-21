@@ -31,7 +31,7 @@ public class Particle {
 
     public static boolean initialized = false;
 
-    public static String[] TYPES = new String[] {"empty", "sand", "water", "wood", "fire"}; // All public types
+    public static String[] TYPES = new String[] {"empty", "sand", "water", "oil", "wood", "iron", "fire",}; // All public types
     protected static Int2[] SURROUNDINGOFFSETS = new Int2[] {
             new Int2(1, 0),
             new Int2(0, -1),
@@ -50,6 +50,10 @@ public class Particle {
                 return new EmptyParticle();
             case "fire" :
                 return new FireParticle();
+            case "iron" :
+                return new IronParticle();
+            case "oil" :
+                return new OilParticle();
             case "sand" :
                 return new SandParticle();
             case "water" :

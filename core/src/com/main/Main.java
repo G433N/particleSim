@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.main.math.Float2;
@@ -24,14 +23,35 @@ import static java.lang.Math.*;
 
 
 // TODO TODAY
-// Fire and Wood
-// CO2
-// Bouncing ball
+// Wood color Done
+// Iron color Done
+// Empty color Done
+// Fire spread tweaking Done
+// Fire burns upwards Done
+// Write fire rules
+// Oil
+// Interactions???
+// Steam???
+// O2???
+// Gunpowder
+// Gas???
+// More modifiers for liquids like flow speed and shit
+
+// TODO
+// Perma fire source
+// Perma water source
+// Perma empty source
+// Detect if is in body or is in edge of body
+// Particle updates?
+// Lerp color between particle of same type
 
 // TODO SOME DAY
 // Pressure
 //	With particle mass and shit
 // Ice
+
+// Chances are nearly always better than timers
+// Diagonals takes time don't do that
 public class Main extends ApplicationAdapter {
 
 	public static final int pixelSize = 4;
@@ -69,7 +89,6 @@ public class Main extends ApplicationAdapter {
 
 		Gdx.input.setInputProcessor(stage);
 
-		int xMax = Gdx.graphics.getWidth();
 		int yMax = Gdx.graphics.getHeight();
 
 
@@ -189,27 +208,10 @@ public class Main extends ApplicationAdapter {
 		spawnSelect = new PSelectBox(Particle.TYPES, new Int2(10, 10), new Int2(100, 20), new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				String type = (String) spawnSelect.getSelected();
-				spawnType = type;
+				spawnType = (String) spawnSelect.getSelected();
 			}
 		});
 		stage.addActor(spawnSelect);
-
-		// Adds all particle types buttons
-		/*
-		for (int i = 0; i < Particle.TYPES.length; i++) {
-
-			final String type = Particle.TYPES[i];
-
-			stage.addActor(new PButton(type, new Int2(10, yMax - 30 - 30 * i), new Int2(50, 20), new ChangeListener() {
-				@Override
-				public void changed(ChangeEvent event, Actor actor) {
-					spawnType = type;
-					spawnIndexLabel.setText("Particle: " + type);
-				}
-			}));
-		}
-		 */
 
 	}
 
@@ -268,8 +270,7 @@ public class Main extends ApplicationAdapter {
 
 	private void draw() {
 
-		ScreenUtils.clear(0, 1, 1, .5f);
-
+		ScreenUtils.clear(175/255f, 238/255f, 238/255f, .5f);
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
 		for (int x = 0; x < ParticleWorld.width; x++) {
