@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 public class EnergyParticle extends Particle {
 
     protected EnergyParticle(String type) {
-        super(type, 0, 0);
+        super(type, Integer.MAX_VALUE, 0);
         this.state = ParticleState.ENERGY;
     }
 

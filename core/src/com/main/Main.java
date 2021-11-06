@@ -22,7 +22,7 @@ import com.main.ui.PSelectBox;
 import static java.lang.Math.*;
 
 
-// TODO TODAY
+// TODO
 // Wood color Done
 // Iron color Done
 // Empty color Done
@@ -44,6 +44,8 @@ import static java.lang.Math.*;
 // Detect if is in body or is in edge of body
 // Particle updates?
 // Lerp color between particle of same type
+// Friction through liquids and shit
+// pressure
 
 // TODO SOME DAY
 // Pressure

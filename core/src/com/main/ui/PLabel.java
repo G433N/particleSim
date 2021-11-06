@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.main.Main;
-import com.main.OldWorld;
 import com.main.math.Int2;
 import com.main.particle.ParticleWorld;
 

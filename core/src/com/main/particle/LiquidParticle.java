@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class LiquidParticle extends Particle {
 
-    protected int depth = 0;
+    public int depth = 0;
 
     protected LiquidParticle(String type, int density, float flammability) {
         super(type, density, flammability);

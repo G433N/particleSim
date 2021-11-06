@@ -52,7 +52,7 @@ public class FireParticle extends EnergyParticle {
         if (spread) return;
         for (Int2 offset : new Int2[] {new Int2(0, 1), new Int2(0, 2), new Int2(0, 3), new Int2(0, 4)}) { // TODO : Make to function
             Int2 pos = this.position.offset(offset);
-            if(random() < world.getParticle(pos).flammability/2) { // random can't return 1;
+            if(random() < world.getParticle(pos).flammability) { // random can't return 1;
                 world.setParticle(pos, new FireParticle(this.lifeTime + (int) (random() * 10f)));
                 world.getParticle(pos).moved = true;
             }

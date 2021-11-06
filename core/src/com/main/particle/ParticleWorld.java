@@ -51,13 +51,6 @@ public class ParticleWorld {
 
     }
 
-    public void setParticle(int x, int y, int nx, int ny) {
-        //System.out.println(q + " " + p + " -> " + x + " " + y);
-        Particle p = this.getParticle(x, y);
-        p.position.set(nx, ny);
-        this.grid[nx][ny] = p;
-    }
-
     public void setParticle(int x, int y, String type) {
         this.setParticle(x, y, Particle.get(type));
     }
@@ -74,7 +67,7 @@ public class ParticleWorld {
         if (!simulate) return;
 
 
-        // First loop
+        // First loop -> Pre calculation
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < length; y++) {
 
@@ -92,7 +85,25 @@ public class ParticleWorld {
                 this.getParticle(position).secondaryUpdate(deltaTime);
             }
         }
+
+        // Third loop
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < length; y++) {
+
+                String type = this.getParticle(x, y).type;
+
+                switch (type) {
+                    case "water" :
+                            if (this.getParticle(x , y-1).type.equals("fire")) {
+                               this.setParticle(x,y-1, "empty");
+                    }
+                        break;
+                }
+            }
+        }
     }
+
+
 
     // Particle logic
 

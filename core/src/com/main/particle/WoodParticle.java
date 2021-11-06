@@ -7,7 +7,7 @@ import static java.lang.Math.random;
 public class WoodParticle extends SolidParticle {
 
     protected WoodParticle() {
-        super("wood", 5, 0.25f);
+        super("wood", 5, 0.15f);
         this.colorOffset = (float) random();
     }
 

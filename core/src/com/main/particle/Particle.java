@@ -25,6 +25,7 @@ public class Particle {
     // Physics
     public Int2 position = new Int2();
     public Float2 velocity = new Float2();
+    public float friction = 0;
 
     public boolean[] collision = {false, false, false, false}; // 0 = Top, 1 = Right, 2 = Bottom, 3 = Left
     protected boolean moved = false; /// This frame it can't get calculated twice
@@ -32,6 +33,7 @@ public class Particle {
     public static boolean initialized = false;
 
     public static String[] TYPES = new String[] {"empty", "sand", "water", "oil", "wood", "iron", "fire",}; // All public types
+
     protected static Int2[] SURROUNDINGOFFSETS = new Int2[] {
             new Int2(1, 0),
             new Int2(0, -1),
@@ -135,23 +137,29 @@ public class Particle {
                 .add(-this.position.x, -this.position.y)
                 .scl(1 / distance); // Distance is already calculated, so using .nor() is ineffective
 
+        Float2 friction = new Float2(normal).scl(-1f);
 
 
-        Float2 target = this.position.toFloat2();
+
+        Float2 targetPosition = this.position.toFloat2();
 
         for (int t = 0; t < roundDistance; t++) { // roundDistance always gets to 0
 
-            target.add(normal);
+            targetPosition.add(normal);
 
-            if(this.position.x == round(target.x) && this.position.y == round(target.y)) {
+            Particle target = world.getParticle(round(targetPosition.x), round(targetPosition.y));
+
+            if(this.position.x == target.position.x && this.position.y == target.position.y) {
                 continue;
             }
 
-            if (world.getParticle(round(target.x), round(target.y)).density < this.density) {
+            if (target.density < this.density) {
 
-                Int2 delta = new Int2(round(target.x)-position.x, round(target.y)-position.y);
+                Int2 delta = new Int2(round(targetPosition.x)-position.x, round(targetPosition.y)-position.y);
 
                 world.movePosition(this.position.x, this.position.y, delta.x, delta.y);
+
+                this.velocity.add(new Float2(friction).scl(target.friction));
 
                 // this.position.add(delta.x, delta.y); -> This little line cost me one week
             } else break;
