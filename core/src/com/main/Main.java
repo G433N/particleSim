@@ -3,6 +3,7 @@ package com.main;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -19,6 +20,8 @@ import com.main.ui.PCheckButton;
 import com.main.ui.PLabel;
 import com.main.ui.PSelectBox;
 
+import java.awt.*;
+
 import static java.lang.Math.*;
 
 
@@ -28,8 +31,8 @@ import static java.lang.Math.*;
 // Empty color Done
 // Fire spread tweaking Done
 // Fire burns upwards Done
-// Write fire rules
-// Oil
+// Write fire rules Done
+// Oil Done
 // Interactions???
 // Steam???
 // O2???
@@ -56,7 +59,7 @@ import static java.lang.Math.*;
 // Diagonals takes time don't do that
 public class Main extends ApplicationAdapter {
 
-	public static final int pixelSize = 4;
+	public static final int pixelSize = 2;
 
 	private SpriteBatch batch;
 	private ShapeRenderer shapeRenderer;
@@ -275,15 +278,21 @@ public class Main extends ApplicationAdapter {
 		ScreenUtils.clear(175/255f, 238/255f, 238/255f, .5f);
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
-		for (int x = 0; x < ParticleWorld.width; x++) {
+		for (int x = 0; x < ParticleWorld.width; x++) { // TODO : Paint pixmap
 			for (int y = 0; y < ParticleWorld.length; y++) {
 
-				//if (!world.getParticle(x, y).liquid) continue;
 
 				shapeRenderer.setColor(world.getParticle(x, y).getColor());
 				shapeRenderer.rect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
 			}
 		}
+
+		shapeRenderer.setColor(Color.RED);
+
+		shapeRenderer.end();
+
+		shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+		//shapeRenderer.rect(world.minUpdate.x*pixelSize, world.minUpdate.y*pixelSize, (world.maxUpdate.x-world.minUpdate.x)*pixelSize, (world.maxUpdate.y-world.minUpdate.y)*pixelSize);
 		shapeRenderer.end();
 
 		stage.act();

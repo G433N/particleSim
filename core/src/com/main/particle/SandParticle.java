@@ -15,11 +15,13 @@ public class SandParticle extends SolidParticle {
 
     @Override
     protected void secondaryRule(float deltaTime) {
-
+        /*
         if(world.getParticle(this.position.offset(0, -1)).density < this.density) {
             world.movePosition(this.position.x, this.position.y, 0, -1);
             return;
-        }
+        }*/
+
+        if(world.getParticle(this.position.offset(0, -1)).density < this.density) return;
 
         java.util.Random random = new Random();
 

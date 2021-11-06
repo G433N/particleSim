@@ -1,14 +1,16 @@
 package com.main.particle;
 
+import com.main.math.Float2;
 import com.main.math.Int2;
 
 import static com.badlogic.gdx.math.MathUtils.random;
+import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 public class ParticleWorld {
 
-    public static int width = 64;
-    public static int length = 64;
+    public static int width = 256;
+    public static int length = 128;
 
     protected final int gravity = -10;
 
@@ -43,12 +45,21 @@ public class ParticleWorld {
         return this.getParticle(position.x, position.y);
     }
 
+    private Int2 nextMaxUpdate = new Int2(0, 0);
+    private Int2 nextMinUpdate = new Int2(width-1, length-1);
+    public Int2 maxUpdate = new Int2(nextMaxUpdate);
+    public Int2 minUpdate = new Int2(nextMinUpdate);
 
     public void setParticle(int x, int y, Particle p) {
-        //p.position.set(x, y);
         this.grid[x][y] = p;
         this.grid[x][y].position.set(x, y);
 
+        updateUpdateArea(x, y);
+    }
+
+    public void updateUpdateArea(int x, int y) {
+        nextMaxUpdate.set(max(nextMaxUpdate.x, x+1), max(nextMaxUpdate.y, y+1));
+        nextMinUpdate.set(min(nextMinUpdate.x, x), min(nextMinUpdate.y, y));
     }
 
     public void setParticle(int x, int y, String type) {
@@ -62,10 +73,17 @@ public class ParticleWorld {
 
     // Tick
 
+
     public void tick(float deltaTime) {
 
-        if (!simulate) return;
 
+        maxUpdate = new Int2(nextMaxUpdate.x, nextMaxUpdate.y);
+        minUpdate = new Int2(nextMinUpdate.x, nextMinUpdate.y);
+
+        nextMaxUpdate.set(0, 0);
+        nextMinUpdate.set(width-1, length-1);
+
+        if (!simulate) return;
 
         // First loop -> Pre calculation
         for (int x = 0; x < width; x++) {
@@ -78,6 +96,7 @@ public class ParticleWorld {
         }
 
         // Second loop
+        //System.out.println("Min: " +  this.minUpdate + " Max: " + this.maxUpdate);
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < length; y++) {
 
@@ -85,7 +104,10 @@ public class ParticleWorld {
                 this.getParticle(position).secondaryUpdate(deltaTime);
             }
         }
-
+        /*
+        for (int x = minUpdate.x; x < maxUpdate.x; x++) {
+            for (int y = minUpdate.y; y < maxUpdate.y; y++) {
+         */
         // Third loop
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < length; y++) {
@@ -121,11 +143,12 @@ public class ParticleWorld {
 
     public void spawn(Int2 pos, int radius, String type, boolean isBrush, boolean isRandom, int spawnChance) {
 
-        if (isInWorld(pos.x, pos.y)) { // FIXME : MAKE TO METHOD
+        if (isInWorld(pos)) {
 
             if (isBrush) {
-                for (int x = Math.max(pos.x - radius, 0); x < Math.min(pos.x + radius, width); x++) {
-                    for (int y = Math.max(pos.y - radius, 0); y < min(pos.y + radius, length); y++) {
+
+                for (int x = max(pos.x - radius, 0); x < Math.min(pos.x + radius, width); x++) {
+                    for (int y = max(pos.y - radius, 0); y < min(pos.y + radius, length); y++) {
 
                         if (!isRandom) {
                             this.setParticle(x, y, Particle.get(type));

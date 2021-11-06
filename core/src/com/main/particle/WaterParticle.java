@@ -12,7 +12,7 @@ public class WaterParticle extends LiquidParticle{
     protected WaterParticle() {
         super("water", 2, 0);
         this.colorOffset = (float) (random() * 0.05);
-        this.friction = 1;
+        this.friction = 0.2f;
     }
 
     private final float colorOffset;

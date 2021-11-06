@@ -9,7 +9,8 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-import static java.lang.Math.round;
+import static java.lang.Math.*;
+import static java.lang.Math.min;
 
 public class Particle {
 
@@ -32,7 +33,7 @@ public class Particle {
 
     public static boolean initialized = false;
 
-    public static String[] TYPES = new String[] {"empty", "sand", "water", "oil", "wood", "iron", "fire",}; // All public types
+    public static String[] TYPES = new String[] {"empty", "sand", "water", "oil", "wood", "iron", "fire", "waterSource",}; // All public types
 
     protected static Int2[] SURROUNDINGOFFSETS = new Int2[] {
             new Int2(1, 0),
@@ -62,6 +63,8 @@ public class Particle {
                 return new WaterParticle();
             case "wood" :
                 return new WoodParticle();
+            case "waterSource":
+                return new WaterSource();
         }
         throw new Error("Particle type doesn't exist!");
     }
@@ -130,20 +133,25 @@ public class Particle {
 
         Float2 goal = new Float2(this.position.toFloat2()).add(this.velocity);
 
-        final float distance = goal.dst(this.position.toFloat2());
-        final int roundDistance = round(distance);
+        float distance = goal.dst(this.position.toFloat2());
+        int roundDistance = round(distance);
 
         Float2 normal = new Float2(goal)
                 .add(-this.position.x, -this.position.y)
-                .scl(1 / distance); // Distance is already calculated, so using .nor() is ineffective
-
-        Float2 friction = new Float2(normal).scl(-1f);
+                .scl(1 / distance); // Distance is already calculated, so using .nor() is ineffective;
 
 
 
         Float2 targetPosition = this.position.toFloat2();
 
         for (int t = 0; t < roundDistance; t++) { // roundDistance always gets to 0
+
+            goal = new Float2(this.position.toFloat2()).add(this.velocity);
+            distance = goal.dst(this.position.toFloat2());
+            roundDistance = round(distance);
+            normal = new Float2(goal)
+                    .add(-this.position.x, -this.position.y)
+                    .scl(1 / distance);
 
             targetPosition.add(normal);
 
@@ -159,7 +167,7 @@ public class Particle {
 
                 world.movePosition(this.position.x, this.position.y, delta.x, delta.y);
 
-                this.velocity.add(new Float2(friction).scl(target.friction));
+                this.velocity.add(new Float2(this.velocity).scl(-target.friction)); // FIXME this formula is actually for force, so we should fix that
 
                 // this.position.add(delta.x, delta.y); -> This little line cost me one week
             } else break;

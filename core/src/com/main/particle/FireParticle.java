@@ -9,7 +9,7 @@ public class FireParticle extends EnergyParticle {
 
     private final int maxLifeTime;
     private int lifeTime; // in frames
-    private int spreadInterval = 4;
+    private int spreadInterval = 5;
 
     protected FireParticle(int lifeTime) {
         super("fire");
@@ -39,6 +39,7 @@ public class FireParticle extends EnergyParticle {
 
         boolean spread = false;
 
+        // Omni directional spread
         for (Int2 offset : Particle.SURROUNDINGOFFSETS) {
             Int2 pos = this.position.offset(offset);
             if(random() < world.getParticle(pos).flammability) { // random can't return 1;
@@ -50,6 +51,8 @@ public class FireParticle extends EnergyParticle {
         }
 
         if (spread) return;
+
+        // Upwards flames
         for (Int2 offset : new Int2[] {new Int2(0, 1), new Int2(0, 2), new Int2(0, 3), new Int2(0, 4)}) { // TODO : Make to function
             Int2 pos = this.position.offset(offset);
             if(random() < world.getParticle(pos).flammability) { // random can't return 1;
