@@ -1,8 +1,8 @@
 package com.main.particle;
 
-public class NullParticle extends Particle {
+public class Null extends Particle {
 
-    public NullParticle() {
+    public Null() {
         super("null", Integer.MAX_VALUE, 0);
     }
 

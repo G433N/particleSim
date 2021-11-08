@@ -1,13 +1,12 @@
 package com.main.particle;
 
-import com.main.math.Float2;
 import com.main.math.Int2;
 
 import static com.badlogic.gdx.math.MathUtils.random;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
-public class ParticleWorld {
+public class World {
 
     public static int width = 256;
     public static int length = 128;
@@ -18,7 +17,7 @@ public class ParticleWorld {
 
     public boolean simulate = false;
 
-    public ParticleWorld() {
+    public World() {
 
         Particle.init(this);
 
@@ -90,7 +89,7 @@ public class ParticleWorld {
             for (int y = 0; y < length; y++) {
 
                 Int2 position = new Int2(x, y);
-                this.getParticle(position).moved = false;
+                this.getParticle(position).updated = false;
                 this.getParticle(position).primaryUpdate(deltaTime);
             }
         }
@@ -129,7 +128,7 @@ public class ParticleWorld {
 
     // Particle logic
 
-    protected void movePosition(int x, int y, int dx, int dy) { // Position, deltaPosition
+    public void movePosition(int x, int y, int dx, int dy) { // Position, deltaPosition
 
         dx += x;
         dy += y;
@@ -137,6 +136,15 @@ public class ParticleWorld {
         Particle temp = this.getParticle(dx, dy);
         this.setParticle(dx, dy, this.getParticle(x, y));
         this.setParticle(x, y, temp);
+
+        this.getParticle(x, y).moved = true;
+        this.getParticle(dx, dy).moved = true;
+
+        for (Int2 offset : Particle.SURROUNDINGOFFSETS) {
+            Particle p = this.getParticle(new Int2(dx, dy).offset(offset));
+            p.isFreeFalling = true;
+            p.moved = true;
+        }
     }
 
     // Misc
@@ -169,6 +177,6 @@ public class ParticleWorld {
     }
 
     public boolean isInWorld(int x, int y) {
-        return 0 <= x && x < ParticleWorld.width && 0 <= y && y < ParticleWorld.length;
+        return 0 <= x && x < World.width && 0 <= y && y < World.length;
     }
 }

@@ -2,8 +2,9 @@ package com.main.particle;
 
 import com.badlogic.gdx.graphics.Color;
 import com.main.math.Int2;
+import com.main.particle.states.Energy;
 
-public class WaterSource extends EnergyParticle {
+public class WaterSource extends Energy {
 
     private int cooldown = 3;
     private int timer = cooldown;
@@ -20,10 +21,10 @@ public class WaterSource extends EnergyParticle {
     @Override
     public void secondaryUpdate(float deltaTime) {
         if(timer == 0) {
-            world.setParticle(new Int2(this.position.offset(0, -1)), new WaterParticle());
-            world.setParticle(new Int2(this.position.offset(0, 1)), new WaterParticle());
-            world.setParticle(new Int2(this.position.offset(1, 0)), new WaterParticle());
-            world.setParticle(new Int2(this.position.offset(-1, 0)), new WaterParticle());
+            world.setParticle(new Int2(this.position.offset(0, -1)), new Water());
+            world.setParticle(new Int2(this.position.offset(0, 1)), new Water());
+            world.setParticle(new Int2(this.position.offset(1, 0)), new Water());
+            world.setParticle(new Int2(this.position.offset(-1, 0)), new Water());
             timer = cooldown;
         }
     }

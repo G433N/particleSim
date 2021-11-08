@@ -14,13 +14,11 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.main.math.Float2;
 import com.main.math.Int2;
 import com.main.particle.Particle;
-import com.main.particle.ParticleWorld;
+import com.main.particle.World;
 import com.main.ui.PButton;
 import com.main.ui.PCheckButton;
 import com.main.ui.PLabel;
 import com.main.ui.PSelectBox;
-
-import java.awt.*;
 
 import static java.lang.Math.*;
 
@@ -66,7 +64,7 @@ public class Main extends ApplicationAdapter {
 
 	private Stage stage;
 
-	private ParticleWorld world;
+	private World world;
 
 	private final Float2 mousePos = new Float2();
 	private final Int2 gridPos = new Int2();
@@ -81,7 +79,7 @@ public class Main extends ApplicationAdapter {
 
 		UI();
 
-		world = new ParticleWorld();
+		world = new World();
 	}
 
 	private PLabel brushRadiusLabel;
@@ -123,8 +121,8 @@ public class Main extends ApplicationAdapter {
 		stage.addActor(new PButton("Reset", new Int2(10, 50), new Int2(50, 20), new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				for (int x = 0; x < ParticleWorld.width; x++) {
-					for (int y = 0; y < ParticleWorld.length; y++) {
+				for (int x = 0; x < World.width; x++) {
+					for (int y = 0; y < World.length; y++) {
 						world.setParticle(x, y, "empty");
 					}
 				}
@@ -247,7 +245,7 @@ public class Main extends ApplicationAdapter {
 		final boolean inputMouseLeft = Gdx.input.isButtonPressed(Input.Keys.LEFT);
 
 		// get mousePos and mousePos -> gridPos
-		mousePos.set(Gdx.input.getX(), ParticleWorld.length * pixelSize - Gdx.input.getY());
+		mousePos.set(Gdx.input.getX(), World.length * pixelSize - Gdx.input.getY());
 		gridPos.set(
 				(int) floor(mousePos.x / pixelSize),
 				(int) floor(mousePos.y / pixelSize)
@@ -278,8 +276,8 @@ public class Main extends ApplicationAdapter {
 		ScreenUtils.clear(175/255f, 238/255f, 238/255f, .5f);
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
-		for (int x = 0; x < ParticleWorld.width; x++) { // TODO : Paint pixmap
-			for (int y = 0; y < ParticleWorld.length; y++) {
+		for (int x = 0; x < World.width; x++) { // TODO : Paint pixmap
+			for (int y = 0; y < World.length; y++) {
 
 
 				shapeRenderer.setColor(world.getParticle(x, y).getColor());

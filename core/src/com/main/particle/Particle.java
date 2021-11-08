@@ -1,9 +1,9 @@
 package com.main.particle;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Vector2;
 import com.main.math.Float2;
 import com.main.math.Int2;
+import com.main.particle.states.State;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -16,30 +16,39 @@ public class Particle {
 
     // TODO : SORT VARIABLES
 
-    protected static ParticleWorld world = null;
+    protected static World world = null;
 
     public final String type;
     public final int density;
     public final float flammability; // 0 <= Value <= 1
-    public ParticleState state = ParticleState.PARTICLE;
+    public State state = State.PARTICLE;
 
     // Physics
     public Int2 position = new Int2();
     public Float2 velocity = new Float2();
-    public float friction = 0;
+    public Float2 elasticity = new Float2();
+    public Float2 friction = new Float2(0, 0);
+    public float thickness = 0; // When moving through a liquid (inside friction)
+    public float inertialResistance = 0; // TODO : Implement this make sand faster
+
 
     public boolean[] collision = {false, false, false, false}; // 0 = Top, 1 = Right, 2 = Bottom, 3 = Left
-    protected boolean moved = false; /// This frame it can't get calculated twice
+    public boolean[] hasNeighbour = {false, false, false, false}; // 0 = Top, 1 = Right, 2 = Bottom, 3 = Left TODO : Better name
+    protected boolean updated = false; /// This frame it can't get calculated twice
+    public boolean moved = true;
+    public boolean isInAir = true;
+    public boolean isFreeFalling = true; // https://www.youtube.com/watch?v=5Ka3tbbT-9E
 
-    public static boolean initialized = false;
+
+    private static boolean initialized = false;
 
     public static String[] TYPES = new String[] {"empty", "sand", "water", "oil", "wood", "iron", "fire", "waterSource",}; // All public types
 
     protected static Int2[] SURROUNDINGOFFSETS = new Int2[] {
+            new Int2(0, 1),
             new Int2(1, 0),
             new Int2(0, -1),
             new Int2(-1, 0),
-            new Int2(0, 1)
     };
 
     public static Particle get(String type) {
@@ -48,32 +57,32 @@ public class Particle {
 
         switch (type) {
             case "null" :
-                return new NullParticle();
+                return new Null();
             case "empty" :
-                return new EmptyParticle();
+                return new Empty();
             case "fire" :
-                return new FireParticle();
+                return new Fire();
             case "iron" :
-                return new IronParticle();
+                return new Iron();
             case "oil" :
-                return new OilParticle();
+                return new Oil();
             case "sand" :
-                return new SandParticle();
+                return new Sand();
             case "water" :
-                return new WaterParticle();
+                return new Water();
             case "wood" :
-                return new WoodParticle();
+                return new Wood();
             case "waterSource":
                 return new WaterSource();
         }
         throw new Error("Particle type doesn't exist!");
     }
 
-    public static void init(ParticleWorld particleWorld) {
+    public static void init(World world) {
 
         if(initialized) throw new Error("Can't initialized twice");
 
-        world = particleWorld;
+        Particle.world = world;
         initialized = true;
     }
 
@@ -92,8 +101,9 @@ public class Particle {
          */
 
         this.collisionDetection();
+        this.collisionInteraction();
 
-        this.velocity.y += world.gravity * deltaTime;
+        this.hasNeighbourDetection();
 
         this.primaryRule(deltaTime);
     }
@@ -104,23 +114,25 @@ public class Particle {
             Apply velocity if velocity is not close to zero
             Apply secondary rules if not applying velocity
          */
-        if(this.moved) return;
-        else this.moved = true;
-
-        if(!this.velocity.isZero(0.2f)) {
-            this.applyVelocity();
-            return;
-        }
+        if(this.updated) return;
+        else this.updated = true;
 
         this.secondaryRule(deltaTime);
     }
 
     protected void primaryRule(float deltaTime) {
 
+        this.isInAir = !this.hasNeighbour[2];
+        this.isFreeFalling = (this.moved && this.isFreeFalling) || this.isInAir;
+        this.moved = false;
+        if(isInAir) this.velocity.y += world.gravity * deltaTime;
+
     }
 
     protected void secondaryRule(float deltaTime) {
-
+        if(!this.velocity.isZero(0.2f)) {
+            this.applyVelocity();
+        }
     }
 
     public Color getColor() {
@@ -136,11 +148,7 @@ public class Particle {
         float distance = goal.dst(this.position.toFloat2());
         int roundDistance = round(distance);
 
-        Float2 normal = new Float2(goal)
-                .add(-this.position.x, -this.position.y)
-                .scl(1 / distance); // Distance is already calculated, so using .nor() is ineffective;
-
-
+        Float2 normal;
 
         Float2 targetPosition = this.position.toFloat2();
 
@@ -157,53 +165,59 @@ public class Particle {
 
             Particle target = world.getParticle(round(targetPosition.x), round(targetPosition.y));
 
-            if(this.position.x == target.position.x && this.position.y == target.position.y) {
-                continue;
-            }
 
             if (target.density < this.density) {
+
 
                 Int2 delta = new Int2(round(targetPosition.x)-position.x, round(targetPosition.y)-position.y);
 
                 world.movePosition(this.position.x, this.position.y, delta.x, delta.y);
 
-                this.velocity.add(new Float2(this.velocity).scl(-target.friction)); // FIXME this formula is actually for force, so we should fix that
+                this.velocity.add(new Float2(this.velocity).scl(-target.thickness)); // FIXME this formula is actually for force, so we should fix that
 
                 // this.position.add(delta.x, delta.y); -> This little line cost me one week
             } else break;
         }
     }
-    
+
+    // ImpactDetection
+
+    protected void hasNeighbourDetection() {
+
+        for (int i = 0; i < SURROUNDINGOFFSETS.length; i++) {
+            Int2 offset = SURROUNDINGOFFSETS[i];
+            final Particle neighbour = world.getParticle(position.offset(offset));
+
+            this.hasNeighbour[i] = this.density <= neighbour.density && neighbour.state != State.ENERGY;
+        }
+    }
+
     protected void collisionDetection() {
 
-        final Particle UP = world.getParticle(position.offset(0, 1));
-        final Particle RIGHT =  world.getParticle(position.offset(1, 0));
-        final Particle DOWN =  world.getParticle(position.offset(0, -1));
-        final Particle LEFT =  world.getParticle(position.offset(-1, 0));
+        collision = new boolean[]{false, false, false, false};
 
-        if (this.density <= UP.density && UP.state != ParticleState.ENERGY) {
-            this.collision[0] = true;
-            if (0 < this.velocity.y) this.velocity.y = 0;
-        }
-        else this.collision[0] = false;
+        for (int i = 0; i < SURROUNDINGOFFSETS.length; i++) {
+            Int2 offset = SURROUNDINGOFFSETS[i];
+            final Particle neighbour = world.getParticle(position.offset(offset));
 
-        if (this.density <= RIGHT.density && RIGHT.state != ParticleState.ENERGY) {
-            this.collision[1] = true;
-            if (0 < this.velocity.x) this.velocity.x = 0;
-        }
-        else this.collision[1] = false;
+            this.collision[i] = this.density <= neighbour.density && !this.hasNeighbour[i];
 
-        if (this.density <= DOWN.density && DOWN.state != ParticleState.ENERGY) {
-            this.collision[2] = true;
-            if (0 > this.velocity.y) this.velocity.y = 0;
+            if (collision[i]) System.out.println("Impact!!!!");
         }
-        else this.collision[2] = false;
+    }
 
-        if (this.density <= LEFT.density && LEFT.state != ParticleState.ENERGY) {
-            this.collision[3] = true;
-            if (0 > this.velocity.x) this.velocity.x = 0;
+    protected void collisionInteraction() {
+        if (this.collision[0] && 0 < this.velocity.y) this.velocity.y = 0;
+        if (this.collision[1] && 0 < this.velocity.x) this.velocity.x = 0;
+        if (this.collision[2] && 0 > this.velocity.y) {
+            float y = abs(this.velocity.y) * this.elasticity.x;
+            this.velocity.x = this.velocity.x == 0 ? (random() < 0.5f ? -y : y) : (this.velocity.x < 0 ? -y : y);
+            this.velocity.y = this.velocity.y * -this.elasticity.y;
         }
-        else this.collision[3] = false;
+        if (this.collision[3] && 0 > this.velocity.x) this.velocity.x = 0;
+
+        if(this.hasNeighbour[0] || this.hasNeighbour[2]) this.velocity.x *= (1-this.friction.x);
+        if(this.hasNeighbour[1] || this.hasNeighbour[3]) this.velocity.y *= (1-this.friction.y);
     }
 
     public void printData() {

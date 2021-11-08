@@ -1,18 +1,20 @@
 package com.main.particle;
 
 import com.badlogic.gdx.graphics.Color;
+import com.main.particle.states.Solid;
 
 import static java.lang.Math.random;
 
-public class IronParticle extends SolidParticle {
+public class Iron extends Solid {
 
-    protected IronParticle() {
+    protected Iron() {
         super("iron", Integer.MAX_VALUE, 0);
         this.colorOffset = (float) random();
     }
 
-    public void primaryUpdate(float deltaTime) {
-        this.collisionDetection();
+    @Override
+    protected void primaryRule(float deltaTime) {
+
     }
 
     private final float colorOffset;

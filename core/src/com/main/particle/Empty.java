@@ -2,9 +2,9 @@ package com.main.particle;
 
 import com.badlogic.gdx.graphics.Color;
 
-public class EmptyParticle extends Particle {
+public class Empty extends Particle {
 
-    public EmptyParticle() {
+    public Empty() {
         super("empty", -1, 0.02f);
     }
 

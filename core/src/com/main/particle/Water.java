@@ -1,18 +1,20 @@
 package com.main.particle;
 
 import com.badlogic.gdx.graphics.Color;
-
-import java.util.Random;
+import com.main.math.Float2;
+import com.main.particle.states.Liquid;
 
 import static java.lang.Math.min;
 import static java.lang.Math.random;
 
-public class WaterParticle extends LiquidParticle{
+public class Water extends Liquid {
 
-    protected WaterParticle() {
+    protected Water() {
         super("water", 2, 0);
         this.colorOffset = (float) (random() * 0.05);
-        this.friction = 0.2f;
+        this.thickness = 0.2f;
+        this.elasticity = new Float2(0.3f, 0.3f);
+        this.friction = new Float2(0.1f, 0.1f);
     }
 
     private final float colorOffset;

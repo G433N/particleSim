@@ -1,19 +1,20 @@
 package com.main.particle;
 
 import com.badlogic.gdx.graphics.Color;
+import com.main.particle.states.Solid;
 
 import static java.lang.Math.random;
 
-public class WoodParticle extends SolidParticle {
+public class Wood extends Solid {
 
-    protected WoodParticle() {
+    protected Wood() {
         super("wood", 5, 0.15f);
         this.colorOffset = (float) random();
     }
 
     @Override
-    public void primaryUpdate(float deltaTime) {
-        this.collisionDetection();
+    protected void primaryRule(float deltaTime) {
+
     }
 
     private final float colorOffset;
