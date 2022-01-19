@@ -26,6 +26,7 @@ public class Particle {
     // Physics
     public Int2 position = new Int2();
     public Float2 velocity = new Float2();
+    //Constants
     public Float2 elasticity = new Float2();
     public Float2 friction = new Float2(0, 0);
     public float thickness = 0; // When moving through a liquid (inside friction)
