@@ -7,6 +7,7 @@ public class Gas extends Particle {
 
     protected float gravityModifier;
     protected int gravityDirection;
+    // protected float defusion rate
 
     protected Gas(String type, int density, float flammability, float gravityModifier) {
         super(type, density, flammability);
