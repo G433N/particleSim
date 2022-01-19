@@ -194,7 +194,7 @@ public class Particle {
 
     protected void collisionDetection() {
 
-        collision = new boolean[]{false, false, false, false};
+        collision = new boolean[]{false, false, false, false}; // Whats thoese this do
 
         for (int i = 0; i < SURROUNDINGOFFSETS.length; i++) {
             Int2 offset = SURROUNDINGOFFSETS[i];
@@ -202,7 +202,7 @@ public class Particle {
 
             this.collision[i] = this.density <= neighbour.density && !this.hasNeighbour[i];
 
-            if (collision[i]) System.out.println("Impact!!!!");
+            if (collision[i]) System.out.println("Impact!!!!"); // Remove this one
         }
     }
 
