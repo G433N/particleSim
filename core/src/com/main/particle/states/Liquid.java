@@ -35,7 +35,7 @@ public class Liquid extends Particle {
 
         if(isInAir) return;
 
-        if(world.getParticle(this.position.offset(0, -1)).density < this.density) {
+        if(world.getParticle(this.position.offset(0, -1)).density < this.density) { // We can remove this?
             world.movePosition(this.position.x, this.position.y, 0, -1);
             return;
         }
@@ -47,7 +47,7 @@ public class Liquid extends Particle {
 
 
 
-        for (int i = 1; i <= 4; i++) {
+        for (int i = 1; i <= 4; i++) { // Make max length depend on a variable
 
             if (world.getParticle(this.position.offset(dir, -1)).density < this.density) {
                 world.movePosition(position.x, position.y, dir, - 1);
