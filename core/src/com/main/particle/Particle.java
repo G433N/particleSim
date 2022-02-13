@@ -202,8 +202,7 @@ public class Particle {
             final Particle neighbour = world.getParticle(position.offset(offset));
 
             this.collision[i] = this.density <= neighbour.density && !this.hasNeighbour[i];
-
-            if (collision[i]) System.out.println("Impact!!!!"); // Remove this one
+            
         }
     }
 
